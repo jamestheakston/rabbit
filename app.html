@@ -383,8 +383,8 @@
                 <div class="pulse-nfc mb-6">
                     <i class="fas fa-wifi text-6xl text-rabbit-orange rotate-90"></i>
                 </div>
-                <h2 class="text-2xl font-bold mb-2">Ready to Tap</h2>
-                <p class="text-gray-500 text-sm mb-8">Present card or device to terminal</p>
+                <h2 class="text-2xl font-bold mb-2" id="tap-status">Ready to Tap</h2>
+                <p class="text-gray-500 text-sm mb-8" id="tap-message">Present card or device to terminal</p>
 
                 <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-2">
@@ -399,12 +399,12 @@
 
                 <div class="text-xs text-gray-400 text-center mb-6">
                     <i class="fas fa-info-circle mr-1"></i>
-                    Card network fees apply (Visa/Mastercard)
+                    <span id="nfc-status">NFC scanning active</span>
                 </div>
             </div>
 
-            <button onclick="processPayment()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-credit-card mr-2"></i>Simulate Tap / Process Payment
+            <button onclick="processPayment()" id="manual-pay-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                <i class="fas fa-credit-card mr-2"></i>Process Payment Manually
             </button>
         </div>
 
@@ -692,6 +692,13 @@
                 document.getElementById('screen-tap').classList.add('hidden');
                 document.getElementById('screen-complete').classList.add('hidden');
                 document.getElementById(screenId).classList.remove('hidden');
+                
+                // Start NFC when entering tap screen
+                if (screenId === 'screen-tap') {
+                    startNFCS();
+                } else {
+                    stopNFC();
+                }
             } else {
                 document.getElementById(screenId).classList.remove('hidden');
             }
@@ -756,6 +763,46 @@
             showScreen('screen-customer');
         }
 
+        // NFC Functions
+        let nfcReader = null;
+
+        async function startNFCS() {
+            if (!('NDEFReader' in window)) {
+                document.getElementById('nfc-status').textContent = 'NFC not supported on this device';
+                document.getElementById('manual-pay-btn').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const ndef = new NDEFReader();
+                await ndef.scan();
+                document.getElementById('nfc-status').textContent = 'NFC scanning active...';
+                
+                ndef.addEventListener('reading', (event) => {
+                    const message = event.serialNumber || 'Card detected';
+                    document.getElementById('tap-status').textContent = 'Card Detected!';
+                    document.getElementById('tap-message').textContent = 'Processing payment...';
+                    document.getElementById('nfc-status').textContent = 'Card: ' + message;
+                    
+                    // Simulate payment processing delay
+                    setTimeout(() => {
+                        processPayment();
+                    }, 1500);
+                });
+            } catch (error) {
+                console.error('NFC error:', error);
+                document.getElementById('nfc-status').textContent = 'NFC error: ' + error.message;
+                document.getElementById('manual-pay-btn').classList.remove('hidden');
+            }
+        }
+
+        function stopNFC() {
+            if (nfcReader) {
+                // Web NFC doesn't have a direct stop method, but we can ignore events
+                nfcReader = null;
+            }
+        }
+
         // Payment Processing
         function processPayment() {
             const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
@@ -774,11 +821,171 @@
             transactions.push(transaction);
             saveToLocalStorage();
 
+            // Also save to Supabase if configured
+            saveTransactionToSupabase(transaction);
+
             document.getElementById('receipt-amount').textContent = currencySymbol + currentAmount.toFixed(2);
             document.getElementById('receipt-fee').textContent = currencySymbol + networkFee.toFixed(2);
             document.getElementById('receipt-payout').textContent = currencySymbol + merchantNet.toFixed(2);
             
             showScreen('screen-complete');
+        }
+
+        // Supabase Functions
+        async function saveTransactionToSupabase(transaction) {
+            if (!SupabaseClient) return;
+            
+            try {
+                const { data, error } = await SupabaseClient
+                    .from('transactions')
+                    .insert([{
+                        user_id: currentUser?.id,
+                        amount: transaction.amount,
+                        fee: transaction.fee,
+                        fee_mode: transaction.feeMode,
+                        customer_charge: transaction.customerCharge,
+                        merchant_net: transaction.merchantNet,
+                        created_at: transaction.date
+                    }]);
+                
+                if (error) {
+                    console.error('Supabase error:', error);
+                }
+            } catch (e) {
+                console.error('Supabase save error:', e);
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+
+            if (SupabaseClient) {
+                try {
+                    const { data, error } = await SupabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    currentUser = data.user;
+                    localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+                    
+                    // Load user settings from Supabase
+                    await loadUserSettings();
+                    
+                    if (!userSettings || !userSettings.onboardingComplete) {
+                        showScreen('screen-onboarding');
+                    } else {
+                        showScreen('screen-dashboard');
+                        updateDashboard();
+                    }
+                } catch (error) {
+                    alert('Login failed: ' + error.message);
+                }
+            } else {
+                // Demo mode
+                currentUser = { email: email, id: 'demo-user' };
+                localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+                
+                if (!userSettings || !userSettings.onboardingComplete) {
+                    showScreen('screen-onboarding');
+                } else {
+                    showScreen('screen-dashboard');
+                    updateDashboard();
+                }
+            }
+        }
+
+        async function handleSignup() {
+            const business = document.getElementById('signup-business').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            if (!business || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (SupabaseClient) {
+                try {
+                    const { data, error } = await SupabaseClient.auth.signUp({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    currentUser = data.user;
+                    localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+                    
+                    showScreen('screen-onboarding');
+                } catch (error) {
+                    alert('Signup failed: ' + error.message);
+                }
+            } else {
+                // Demo mode
+                currentUser = { email: email, id: 'demo-user', business: business };
+                localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+                
+                showScreen('screen-onboarding');
+            }
+        }
+
+        async function loadUserSettings() {
+            if (!SupabaseClient || !currentUser) return;
+            
+            try {
+                const { data, error } = await SupabaseClient
+                    .from('user_settings')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (data && !error) {
+                    userSettings = data;
+                    saveToLocalStorage();
+                }
+            } catch (e) {
+                console.error('Error loading settings:', e);
+            }
+        }
+
+        async function completeOnboarding() {
+            const businessType = document.getElementById('onboarding-type').value;
+            const currency = document.getElementById('onboarding-currency').value;
+            const feeOption = document.getElementById('onboarding-fee').value;
+
+            userSettings = {
+                user_id: currentUser?.id,
+                businessType: businessType,
+                currency: currency,
+                defaultFeeOption: feeOption,
+                onboardingComplete: true
+            };
+            
+            saveToLocalStorage();
+            
+            if (SupabaseClient) {
+                try {
+                    const { error } = await SupabaseClient
+                        .from('user_settings')
+                        .upsert([userSettings]);
+                    
+                    if (error) console.error('Error saving settings:', error);
+                } catch (e) {
+                    console.error('Error saving settings:', e);
+                }
+            }
+            
+            showScreen('screen-dashboard');
+            updateDashboard();
         }
 
         // Receipt Functions
