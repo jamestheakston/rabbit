@@ -1,215 +1,317 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabbit - 0% Fee Web POS for UK Merchants</title>
+    <title>Rabbit — 0% Transaction Fees on Payments</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
                     colors: {
-                        rabbit: {
-                            orange: '#FF6B35',
-                            dark: '#1a1a2e',
-                            darker: '#16162a',
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
                         }
                     }
                 }
             }
         }
     </script>
+    <style>
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        .glow-effect {
+            box-shadow: 0 20px 50px -10px rgba(34, 197, 94, 0.18);
+        }
+        .image-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .image-card:hover {
+            transform: translateY(-6px);
+        }
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            background-color: #16a34a;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
-<body class="bg-rabbit-darker text-white">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full bg-rabbit-darker/90 backdrop-blur-sm z-50 border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <img src="logo.jpg" alt="Rabbit Logo" class="h-10 w-10 rounded-lg object-cover">
-                <span class="font-bold text-xl">Rabbit</span>
-            </div>
-            <div class="hidden md:flex gap-6 text-sm">
-                <a href="#features" class="hover:text-rabbit-orange transition">Features</a>
-                <a href="#how-it-works" class="hover:text-rabbit-orange transition">How It Works</a>
-                <a href="#pricing" class="hover:text-rabbit-orange transition">Pricing</a>
-            </div>
-            <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 px-4 py-2 rounded-lg font-semibold text-sm transition">
-                Launch Terminal
-            </a>
-        </div>
-    </nav>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-100 selection:text-brand-900">
 
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center justify-center pt-20 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <div class="mb-8">
-                <img src="logo.jpg" alt="Rabbit Logo" class="h-24 w-24 rounded-2xl mx-auto mb-6 object-cover shadow-2xl">
-                <h1 class="text-5xl md:text-6xl font-bold mb-4">
-                    Take Payments with
-                    <span class="text-rabbit-orange">0% Fees</span>
-                </h1>
-                <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-                    The UK's first web-based POS terminal that lets merchants pass card network fees to customers. Keep 100% of every sale.
-                </p>
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-brand-500/20">
+                    <i data-lucide="rabbit" class="w-6 h-6"></i>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight text-slate-900">Rabbit</span>
             </div>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center justify-center gap-2">
-                    <i class="fas fa-credit-card"></i>Start Taking Payments
-                </a>
-                <a href="#how-it-works" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center justify-center gap-2">
-                    <i class="fas fa-play-circle"></i>See How It Works
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+                <a href="#features" class="hover:text-brand-600 transition-colors">Features</a>
+                <a href="#rates" class="hover:text-brand-600 transition-colors">Zero Fees</a>
+                <a href="#testimonials" class="hover:text-brand-600 transition-colors">Testimonials</a>
+                <a href="#pricing" class="hover:text-brand-600 transition-colors">Pricing</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden sm:inline-block text-sm font-semibold text-slate-700 hover:text-brand-600 transition-colors px-3 py-2">Sign In</a>
+                <a href="#download" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-sm hover:shadow transition-all">
+                    <span>Get Started</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
-            <div class="mt-12 flex justify-center gap-8 text-slate-400">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">0%</div>
-                    <div class="text-sm">Platform Fees</div>
+        </div>
+    </header>
+
+    <section class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden hero-gradient">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                
+                <div class="lg:col-span-6 flex flex-col items-start text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-bold tracking-wide uppercase">
+                        <span class="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        Next-Gen Payment Network
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+                        0% transaction fees on all Payments in 
+                        <span class="block mt-1 sm:mt-2">
+                            <span id="typed-text" class="bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent"></span><span class="cursor">&nbsp;</span>
+                        </span>
+                    </h1>
+
+                    <p class="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-xl">
+                        Send, receive, and accept payments effortlessly across mobile and point-of-sale devices with zero hidden charges.
+                    </p>
+
+                    <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                        <a href="#" class="inline-flex items-center justify-center gap-3 bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-brand-600/25 transition-all text-base hover:-translate-y-0.5">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            Download Rabbit App
+                        </a>
+                        <a href="#demo" class="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-7 py-4 rounded-2xl transition-all text-base">
+                            <i data-lucide="play-circle" class="w-5 h-5 text-slate-500"></i>
+                            Watch Demo
+                        </a>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-200/80 w-full flex items-center gap-6">
+                        <div class="flex -space-x-3">
+                            <img class="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User Avatar">
+                            <img class="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="User Avatar">
+                            <img class="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="User Avatar">
+                            <img class="w-10 h-10 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" alt="User Avatar">
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1 text-amber-400">
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <span class="text-xs font-bold text-slate-800 ml-1">4.9/5</span>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium">Trusted by 25,000+ UK & EU merchants</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">100%</div>
-                    <div class="text-sm">Merchant Payout</div>
+
+                <div class="lg:col-span-6 relative flex justify-center items-center">
+                    <div class="absolute -inset-4 bg-gradient-to-tr from-brand-500/20 to-emerald-300/30 rounded-3xl blur-2xl -z-10"></div>
+                    
+                    <div class="relative image-card bg-white p-3 rounded-3xl border border-slate-200/80 shadow-2xl glow-effect max-w-full">
+                        <img 
+                            src="https://cdn.prod.website-files.com/662a223c9adeb156702fb6ef/669cc6a3a9ec71d51928c714_landing-page-android.webp" 
+                            alt="Rabbit Android POS App Preview" 
+                            class="rounded-2xl w-full max-w-md lg:max-w-full h-auto object-cover block"
+                            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80';"
+                        />
+
+                        <div class="hidden sm:flex absolute -bottom-6 -left-6 bg-white/95 backdrop-blur border border-slate-200 p-4 rounded-2xl shadow-xl items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center font-bold">
+                                <i data-lucide="percent" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 font-semibold">Zero Commission</p>
+                                <p class="text-sm font-extrabold text-slate-900">0% Always</p>
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:flex absolute -top-6 -right-6 bg-white/95 backdrop-blur border border-slate-200 p-4 rounded-2xl shadow-xl items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 font-semibold">Security Guaranteed</p>
+                                <p class="text-sm font-extrabold text-slate-900">FCA Compliant</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">< 2s</div>
-                    <div class="text-sm">Transaction Time</div>
-                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-20 px-4 bg-rabbit-dark">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-4">Why Choose Rabbit?</h2>
-            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">Built for UK merchants who want to keep more of what they earn.</p>
-            
+    <section class="py-10 bg-white border-y border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">Powering modern commerce across UK and Europe</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60">
+                <span class="font-extrabold text-xl text-slate-700 tracking-tight flex items-center gap-2"><i data-lucide="triangle" class="w-5 h-5"></i> VERTEX</span>
+                <span class="font-extrabold text-xl text-slate-700 tracking-tight flex items-center gap-2"><i data-lucide="circle-dot" class="w-5 h-5"></i> SPHERE</span>
+                <span class="font-extrabold text-xl text-slate-700 tracking-tight flex items-center gap-2"><i data-lucide="box" class="w-5 h-5"></i> CUBIC</span>
+                <span class="font-extrabold text-xl text-slate-700 tracking-tight flex items-center gap-2"><i data-lucide="layers" class="w-5 h-5"></i> NEXUS</span>
+                <span class="font-extrabold text-xl text-slate-700 tracking-tight flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5"></i> PULSE</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 md:py-28 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-brand-600">Why Rabbit</h2>
+                <p class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Keep 100% of what you earn.</p>
+                <p class="text-slate-600 text-base sm:text-lg">Traditional processors take 1.5% - 3.5% on every sale. Rabbit charges zero commission so you grow faster.</p>
+            </div>
+
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
-                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-percentage text-rabbit-orange text-2xl"></i>
+                <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mb-6">
+                        <i data-lucide="tablet" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">0% Platform Fees</h3>
-                    <p class="text-slate-400">Unlike traditional POS systems, we don't take a cut. Pass card network fees to customers and keep 100%.</p>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Turn Tablet into POS</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Transform any Android tablet or phone into a full-fledged payment terminal in seconds without expensive hardware.
+                    </p>
                 </div>
-                
-                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
-                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-mobile-alt text-rabbit-orange text-2xl"></i>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
+                        <i data-lucide="banknote" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Mobile First</h3>
-                    <p class="text-slate-400">Works on any device with a browser. No hardware required. Perfect for pop-ups, markets, and mobile businesses.</p>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Multi-Currency Ready</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Accept payments in £ Pounds, € Euros, and more with instant currency conversion and zero exchange markups.
+                    </p>
                 </div>
-                
-                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
-                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-bolt text-rabbit-orange text-2xl"></i>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Instant Setup</h3>
-                    <p class="text-slate-400">No application, no approval process, no waiting. Start taking payments in under 2 minutes.</p>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Instant Payouts</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Funds land straight into your UK or EU bank account instantly upon customer checkout.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="py-20 px-4">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-4">How It Works</h2>
-            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">Three simple steps to start accepting payments.</p>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
-                    <h3 class="text-xl font-semibold mb-2">Enter Amount</h3>
-                    <p class="text-slate-400">Use the digital keypad or quick-add chips to enter the sale amount in GBP.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
-                    <h3 class="text-xl font-semibold mb-2">Choose Fee Option</h3>
-                    <p class="text-slate-400">Pass the card fee to the customer (recommended) or absorb it at wholesale rates.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
-                    <h3 class="text-xl font-semibold mb-2">Tap & Complete</h3>
-                    <p class="text-slate-400">Customer taps their card or device. Payment processed instantly with receipt.</p>
+    <section id="download" class="py-16 md:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative rounded-3xl bg-slate-900 text-white overflow-hidden p-8 sm:p-14 lg:p-16">
+                <div class="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl space-y-6">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+                        Start accepting 0% fee payments with Rabbit today.
+                    </h2>
+                    <p class="text-slate-300 text-base sm:text-lg">
+                        Download the Android app, pair your tablet, and start accepting £ Pounds or € Euros immediately.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4">
+                        <button class="bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold px-8 py-4 rounded-xl shadow-lg transition-all text-base flex items-center gap-2">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            Download for Android
+                        </button>
+                        <button class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-8 py-4 rounded-xl transition-all text-base border border-slate-700">
+                            Talk to Sales
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-20 px-4 bg-rabbit-dark">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-4">Transparent Pricing</h2>
-            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">No hidden fees. No monthly costs. No surprises.</p>
-            
-            <div class="bg-slate-800/50 rounded-2xl p-8 border border-white/10">
-                <div class="text-center mb-8">
-                    <div class="text-5xl font-bold text-rabbit-orange mb-2">0%</div>
-                    <div class="text-slate-400">Platform Fee</div>
+    <footer class="bg-slate-50 border-t border-slate-200/80 py-12 text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
+                    <i data-lucide="rabbit" class="w-4 h-4"></i>
                 </div>
-                
-                <div class="space-y-4 mb-8">
-                    <div class="flex justify-between items-center py-3 border-b border-white/10">
-                        <span class="text-slate-300">Card Network Fee</span>
-                        <span class="font-semibold">~1.2% + 10p</span>
-                    </div>
-                    <div class="flex justify-between items-center py-3 border-b border-white/10">
-                        <span class="text-slate-300">Monthly Fee</span>
-                        <span class="font-semibold text-rabbit-orange">£0</span>
-                    </div>
-                    <div class="flex justify-between items-center py-3 border-b border-white/10">
-                        <span class="text-slate-300">Hardware Required</span>
-                        <span class="font-semibold text-rabbit-orange">None</span>
-                    </div>
-                    <div class="flex justify-between items-center py-3">
-                        <span class="text-slate-300">Setup Time</span>
-                        <span class="font-semibold">< 2 minutes</span>
-                    </div>
-                </div>
-                
-                <div class="text-center">
-                    <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-block">
-                        Start Free Today
-                    </a>
-                </div>
+                <span class="font-bold text-slate-900">Rabbit Payments</span>
+                <span>© 2026 Rabbit Payments Ltd. All rights reserved.</span>
             </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-4xl font-bold mb-4">Ready to Keep 100% of Your Sales?</h2>
-            <p class="text-slate-400 mb-8 text-lg">Join UK merchants who are saving thousands with Rabbit.</p>
-            <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center gap-2">
-                <i class="fas fa-rocket"></i>Launch Terminal Now
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-rabbit-dark py-12 px-4 border-t border-white/10">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <img src="logo.jpg" alt="Rabbit Logo" class="h-8 w-8 rounded-lg object-cover">
-                    <span class="font-bold">Rabbit</span>
-                </div>
-                <div class="flex gap-6 text-sm text-slate-400">
-                    <a href="#" class="hover:text-white transition">Privacy</a>
-                    <a href="#" class="hover:text-white transition">Terms</a>
-                    <a href="#" class="hover:text-white transition">Contact</a>
-                </div>
-                <div class="text-slate-400 text-sm">
-                    © 2026 Rabbit. All rights reserved.
-                </div>
+            <div class="flex items-center gap-6 font-medium">
+                <a href="#" class="hover:text-slate-900 transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-slate-900 transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-slate-900 transition-colors">Documentation</a>
+                <a href="#" class="hover:text-slate-900 transition-colors">Support</a>
             </div>
         </div>
     </footer>
+
+    <script>
+        lucide.createIcons();
+
+        const phrases = [
+            "£ Pounds",
+            "€ Euros"
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const target = document.getElementById("typed-text");
+
+        function typeLoop() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                target.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                target.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 40 : 80;
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2200;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 400;
+            }
+
+            setTimeout(typeLoop, typeSpeed);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(typeLoop, 500);
+        });
+    </script>
 </body>
 </html>
