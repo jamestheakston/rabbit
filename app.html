@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabbit - 0% Fee Web POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -42,20 +43,231 @@
     </style>
 </head>
 <body class="bg-rabbit-bg text-rabbit-dark min-h-screen">
-    <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
+    <div id="app" class="min-h-screen flex flex-col">
         
-        <!-- Header -->
-        <header class="p-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
+        <!-- Auth Screen -->
+        <div id="screen-auth" class="flex-1 flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8">
+                    <img src="logo.jpg" alt="Rabbit Logo" class="h-20 w-20 rounded-2xl mx-auto mb-4 object-cover shadow-lg">
+                    <h1 class="text-3xl font-bold mb-2">Rabbit</h1>
+                    <p class="text-gray-500">0% Fee Terminal</p>
+                </div>
+
+                <div id="auth-login" class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <h2 class="text-xl font-bold mb-6 text-center">Welcome Back</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="login-email" placeholder="you@example.com" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                        </div>
+                        <button onclick="handleLogin()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
+                            Sign In
+                        </button>
+                    </div>
+
+                    <p class="text-center mt-4 text-sm text-gray-500">
+                        Don't have an account? 
+                        <button onclick="showAuthScreen('signup')" class="text-rabbit-orange font-semibold hover:underline">Sign Up</button>
+                    </p>
+                </div>
+
+                <div id="auth-signup" class="hidden bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <h2 class="text-xl font-bold mb-6 text-center">Create Account</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                            <input type="text" id="signup-business" placeholder="Your Business" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="signup-email" placeholder="you@example.com" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="signup-password" placeholder="••••••••" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                        </div>
+                        <button onclick="handleSignup()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
+                            Create Account
+                        </button>
+                    </div>
+
+                    <p class="text-center mt-4 text-sm text-gray-500">
+                        Already have an account? 
+                        <button onclick="showAuthScreen('login')" class="text-rabbit-orange font-semibold hover:underline">Sign In</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onboarding Screen -->
+        <div id="screen-onboarding" class="hidden flex-1 flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-store text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold mb-2">Setup Your Business</h1>
+                    <p class="text-gray-500">Let's get you started with Rabbit</p>
+                </div>
+
+                <div id="onboarding-step-1" class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <h2 class="text-lg font-bold mb-4">Business Information</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Business Type</label>
+                            <select id="onboarding-type" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                                <option value="retail">Retail Store</option>
+                                <option value="restaurant">Restaurant/Cafe</option>
+                                <option value="service">Service Business</option>
+                                <option value="market">Market Stall</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                            <select id="onboarding-currency" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                                <option value="GBP">British Pound (£)</option>
+                                <option value="EUR">Euro (€)</option>
+                                <option value="USD">US Dollar ($)</option>
+                            </select>
+                        </div>
+                        <button onclick="nextOnboardingStep()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+
+                <div id="onboarding-step-2" class="hidden bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <h2 class="text-lg font-bold mb-4">Payment Settings</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Fee Option</label>
+                            <select id="onboarding-fee" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                                <option value="pass">Pass to Customer (Recommended)</option>
+                                <option value="absorb">Absorb Fee</option>
+                            </select>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-info-circle text-rabbit-orange mr-2"></i>
+                                We recommend passing fees to customers so you keep 100% of your sales.
+                            </p>
+                        </div>
+                        <button onclick="completeOnboarding()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
+                            Complete Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="screen-dashboard" class="hidden flex-1 flex flex-col">
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center gap-3">
                     <img src="logo.jpg" alt="Rabbit Logo" class="h-8 w-8 rounded-lg object-cover">
                     <span class="font-bold text-lg">Rabbit</span>
                 </div>
-                <span class="text-xs text-gray-500">0% Fee Terminal</span>
-            </div>
-        </header>
+                <div class="flex-1 flex justify-center gap-8">
+                    <button onclick="showScreen('screen-dashboard')" class="text-rabbit-orange font-semibold">Dashboard</button>
+                    <button onclick="showScreen('screen-amount')" class="text-gray-600 hover:text-rabbit-orange transition">Terminal</button>
+                    <button onclick="handleLogout()" class="text-gray-600 hover:text-rabbit-orange transition">Logout</button>
+                </div>
+            </nav>
 
-        <!-- Screen 1: Amount Keypad -->
+            <!-- Mobile Header -->
+            <header class="md:hidden p-4 border-b border-gray-200 bg-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <img src="logo.jpg" alt="Rabbit Logo" class="h-8 w-8 rounded-lg object-cover">
+                        <span class="font-bold text-lg">Rabbit</span>
+                    </div>
+                    <button onclick="toggleMobileMenu()" class="text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 p-4">
+                <button onclick="showScreen('screen-dashboard'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-600">Dashboard</button>
+                <button onclick="showScreen('screen-amount'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-600">Terminal</button>
+                <button onclick="handleLogout()" class="block w-full text-left py-2 text-gray-600">Logout</button>
+            </div>
+
+            <div class="flex-1 p-4 md:p-8 overflow-auto">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold mb-1">Dashboard</h1>
+                            <p class="text-gray-500">Welcome back! Here's your business overview.</p>
+                        </div>
+                        <button onclick="showScreen('screen-amount')" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition flex items-center gap-2">
+                            <i class="fas fa-plus"></i>
+                            New Sale
+                        </button>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                            <p class="text-gray-500 text-sm mb-1">Today's Sales</p>
+                            <p class="text-2xl font-bold text-rabbit-orange" id="stat-today">£0.00</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                            <p class="text-gray-500 text-sm mb-1">Transactions</p>
+                            <p class="text-2xl font-bold" id="stat-transactions">0</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                            <p class="text-gray-500 text-sm mb-1">This Week</p>
+                            <p class="text-2xl font-bold" id="stat-week">£0.00</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                            <p class="text-gray-500 text-sm mb-1">This Month</p>
+                            <p class="text-2xl font-bold" id="stat-month">£0.00</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-4 border-b border-gray-200">
+                            <h2 class="font-bold">Recent Transactions</h2>
+                        </div>
+                        <div id="transactions-list" class="divide-y divide-gray-100">
+                            <div class="p-4 text-center text-gray-500">
+                                No transactions yet. Start your first sale!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS Container (Mobile-focused) -->
+        <div id="pos-container" class="hidden max-w-md mx-auto min-h-screen flex flex-col bg-white md:border md:border-gray-200 md:rounded-2xl md:my-4 md:shadow-xl">
+            <!-- POS Header -->
+            <header class="p-4 border-b border-gray-200 flex items-center justify-between">
+                <button onclick="showScreen('screen-dashboard')" class="text-gray-600 hover:text-rabbit-orange transition">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <img src="logo.jpg" alt="Rabbit Logo" class="h-6 w-6 rounded-lg object-cover">
+                    <span class="font-bold">Terminal</span>
+                </div>
+                <div class="w-8"></div>
+            </header>
+
+            <!-- Screen 1: Amount Keypad -->
         <div id="screen-amount" class="flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center">
                 <div class="text-center mb-8">
@@ -247,8 +459,8 @@
                 </div>
             </div>
 
-            <button onclick="startNewSale()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-plus mr-2"></i>Start New Sale
+            <button onclick="returnToDashboard()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
             </button>
         </div>
 
@@ -271,26 +483,217 @@
     </div>
 
     <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://kiirewgajdcagrkjznzd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_N26VX9GlFsTK_ECpS-FTWw_0K1VWxPi';
+        
+        // Initialize Supabase
+        let SupabaseClient;
+        try {
+            SupabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (e) {
+            console.log('Supabase not configured - running in demo mode');
+        }
+
         // State
+        let currentUser = null;
+        let userSettings = null;
+        let transactions = [];
         let currentAmount = 0;
         let feeMode = '';
         let networkFee = 0;
         let customerCharge = 0;
         let merchantNet = 0;
+        let onboardingStep = 1;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadFromLocalStorage();
+        });
+
+        // Local Storage Functions
+        function saveToLocalStorage() {
+            localStorage.setItem('rabbit_transactions', JSON.stringify(transactions));
+            localStorage.setItem('rabbit_settings', JSON.stringify(userSettings));
+        }
+
+        function loadFromLocalStorage() {
+            const savedTransactions = localStorage.getItem('rabbit_transactions');
+            const savedSettings = localStorage.getItem('rabbit_settings');
+            if (savedTransactions) transactions = JSON.parse(savedTransactions);
+            if (savedSettings) userSettings = JSON.parse(savedSettings);
+        }
+
+        // Authentication Functions
+        async function checkAuth() {
+            const session = localStorage.getItem('rabbit_session');
+            if (session) {
+                currentUser = JSON.parse(session);
+                if (!userSettings || !userSettings.onboardingComplete) {
+                    showScreen('screen-onboarding');
+                } else {
+                    showScreen('screen-dashboard');
+                    updateDashboard();
+                }
+            } else {
+                showScreen('screen-auth');
+            }
+        }
+
+        function showAuthScreen(screen) {
+            document.getElementById('auth-login').classList.add('hidden');
+            document.getElementById('auth-signup').classList.add('hidden');
+            document.getElementById('auth-' + screen).classList.remove('hidden');
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+
+            // Demo mode - accept any login
+            currentUser = { email: email, id: 'demo-user' };
+            localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+            
+            if (!userSettings || !userSettings.onboardingComplete) {
+                showScreen('screen-onboarding');
+            } else {
+                showScreen('screen-dashboard');
+                updateDashboard();
+            }
+        }
+
+        async function handleSignup() {
+            const business = document.getElementById('signup-business').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            if (!business || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Demo mode - create user
+            currentUser = { email: email, id: 'demo-user', business: business };
+            localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
+            
+            showScreen('screen-onboarding');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('rabbit_session');
+            currentUser = null;
+            showScreen('screen-auth');
+        }
+
+        // Onboarding Functions
+        function nextOnboardingStep() {
+            onboardingStep = 2;
+            document.getElementById('onboarding-step-1').classList.add('hidden');
+            document.getElementById('onboarding-step-2').classList.remove('hidden');
+        }
+
+        function completeOnboarding() {
+            const businessType = document.getElementById('onboarding-type').value;
+            const currency = document.getElementById('onboarding-currency').value;
+            const feeOption = document.getElementById('onboarding-fee').value;
+
+            userSettings = {
+                businessType: businessType,
+                currency: currency,
+                defaultFeeOption: feeOption,
+                onboardingComplete: true
+            };
+            
+            saveToLocalStorage();
+            showScreen('screen-dashboard');
+            updateDashboard();
+        }
+
+        // Dashboard Functions
+        function updateDashboard() {
+            // Calculate stats
+            const today = new Date().toDateString();
+            const todayTransactions = transactions.filter(t => new Date(t.date).toDateString() === today);
+            const todayTotal = todayTransactions.reduce((sum, t) => sum + t.amount, 0);
+            
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekTransactions = transactions.filter(t => new Date(t.date) >= weekAgo);
+            const weekTotal = weekTransactions.reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            const monthTransactions = transactions.filter(t => new Date(t.date) >= monthAgo);
+            const monthTotal = monthTransactions.reduce((sum, t) => sum + t.amount, 0);
+
+            // Update stats display
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            document.getElementById('stat-today').textContent = currencySymbol + todayTotal.toFixed(2);
+            document.getElementById('stat-transactions').textContent = transactions.length;
+            document.getElementById('stat-week').textContent = currencySymbol + weekTotal.toFixed(2);
+            document.getElementById('stat-month').textContent = currencySymbol + monthTotal.toFixed(2);
+
+            // Update transactions list
+            updateTransactionsList();
+        }
+
+        function updateTransactionsList() {
+            const list = document.getElementById('transactions-list');
+            if (transactions.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-gray-500">No transactions yet. Start your first sale!</div>';
+                return;
+            }
+
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            list.innerHTML = transactions.slice(-10).reverse().map(t => `
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="font-semibold">${currencySymbol}${t.amount.toFixed(2)}</p>
+                        <p class="text-sm text-gray-500">${new Date(t.date).toLocaleDateString()}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${t.feeMode === 'pass' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
+                        ${t.feeMode === 'pass' ? 'Fee Passed' : 'Fee Absorbed'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
 
         // Screen Management
         function showScreen(screenId) {
-            document.querySelectorAll('#app > div:not(header)').forEach(el => {
-                if (el.id !== 'fee-modal' && el.id !== 'qr-modal') {
-                    el.classList.add('hidden');
-                }
-            });
-            document.getElementById(screenId).classList.remove('hidden');
+            // Hide all main screens
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('screen-onboarding').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('pos-container').classList.add('hidden');
+            
+            // Show requested screen
+            if (screenId === 'screen-amount' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-complete') {
+                document.getElementById('pos-container').classList.remove('hidden');
+                // Hide all POS screens
+                document.getElementById('screen-amount').classList.add('hidden');
+                document.getElementById('screen-customer').classList.add('hidden');
+                document.getElementById('screen-tap').classList.add('hidden');
+                document.getElementById('screen-complete').classList.add('hidden');
+                document.getElementById(screenId).classList.remove('hidden');
+            } else {
+                document.getElementById(screenId).classList.remove('hidden');
+            }
         }
 
         // Amount Keypad Functions
         function updateDisplay() {
-            document.getElementById('amount-display').textContent = '£' + currentAmount.toFixed(2);
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            document.getElementById('amount-display').textContent = currencySymbol + currentAmount.toFixed(2);
             document.getElementById('continue-btn').disabled = currentAmount === 0;
         }
 
@@ -343,23 +746,40 @@
                 merchantNet = currentAmount - networkFee;
             }
 
-            document.getElementById('customer-charge').textContent = '£' + customerCharge.toFixed(2);
-            document.getElementById('merchant-net').textContent = '£' + merchantNet.toFixed(2);
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            document.getElementById('customer-charge').textContent = currencySymbol + customerCharge.toFixed(2);
+            document.getElementById('merchant-net').textContent = currencySymbol + merchantNet.toFixed(2);
             
             hideFeeModal();
             
             // Update customer view
-            document.getElementById('customer-view-amount').textContent = '£' + customerCharge.toFixed(2);
-            document.getElementById('customer-view-fee').textContent = '£' + networkFee.toFixed(2);
+            document.getElementById('customer-view-amount').textContent = currencySymbol + customerCharge.toFixed(2);
+            document.getElementById('customer-view-fee').textContent = currencySymbol + networkFee.toFixed(2);
             
             showScreen('screen-customer');
         }
 
         // Payment Processing
         function processPayment() {
-            document.getElementById('receipt-amount').textContent = '£' + currentAmount.toFixed(2);
-            document.getElementById('receipt-fee').textContent = '£' + networkFee.toFixed(2);
-            document.getElementById('receipt-payout').textContent = '£' + merchantNet.toFixed(2);
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            
+            // Save transaction
+            const transaction = {
+                id: Date.now(),
+                amount: currentAmount,
+                fee: networkFee,
+                feeMode: feeMode,
+                customerCharge: customerCharge,
+                merchantNet: merchantNet,
+                date: new Date().toISOString()
+            };
+            
+            transactions.push(transaction);
+            saveToLocalStorage();
+
+            document.getElementById('receipt-amount').textContent = currencySymbol + currentAmount.toFixed(2);
+            document.getElementById('receipt-fee').textContent = currencySymbol + networkFee.toFixed(2);
+            document.getElementById('receipt-payout').textContent = currencySymbol + merchantNet.toFixed(2);
             
             showScreen('screen-complete');
         }
@@ -383,6 +803,18 @@
         }
 
         // Reset
+        function returnToDashboard() {
+            currentAmount = 0;
+            feeMode = '';
+            networkFee = 0;
+            customerCharge = 0;
+            merchantNet = 0;
+            document.getElementById('receipt-input').value = '';
+            updateDisplay();
+            showScreen('screen-dashboard');
+            updateDashboard();
+        }
+
         function startNewSale() {
             currentAmount = 0;
             feeMode = '';
