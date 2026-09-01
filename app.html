@@ -128,7 +128,39 @@
             </div>
         </div>
 
-        <!-- Screen 3: Ready to Tap -->
+        <!-- Screen 3: Customer View -->
+        <div id="screen-customer" class="hidden flex-1 flex flex-col p-4">
+            <div class="flex-1 flex flex-col justify-center items-center">
+                <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-pound-sign text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Payment Required</h2>
+                <p class="text-gray-500 text-sm mb-8 text-center">Please complete your payment</p>
+
+                <div class="bg-white rounded-xl p-6 w-full mb-6 shadow-sm border border-gray-200 text-center">
+                    <p class="text-gray-500 text-sm mb-2">Amount to Pay</p>
+                    <div class="text-5xl font-bold text-rabbit-orange mb-4" id="customer-view-amount">£0.00</div>
+                    
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Card Fee</span>
+                            <span class="text-gray-400" id="customer-view-fee">£0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-gray-400 text-center mb-6">
+                    <i class="fas fa-lock mr-1"></i>
+                    Secure payment powered by Rabbit
+                </div>
+            </div>
+
+            <button onclick="showScreen('screen-tap')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                <i class="fas fa-arrow-right mr-2"></i>Continue to Payment
+            </button>
+        </div>
+
+        <!-- Screen 4: Ready to Tap -->
         <div id="screen-tap" class="hidden flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center items-center">
                 <div class="pulse-nfc mb-6">
@@ -159,7 +191,7 @@
             </button>
         </div>
 
-        <!-- Screen 4: Payment Complete -->
+        <!-- Screen 5: Payment Complete -->
         <div id="screen-complete" class="hidden flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center items-center">
                 <div class="w-20 h-20 bg-rabbit-orange rounded-full flex items-center justify-center mb-6">
@@ -315,7 +347,12 @@
             document.getElementById('merchant-net').textContent = '£' + merchantNet.toFixed(2);
             
             hideFeeModal();
-            showScreen('screen-tap');
+            
+            // Update customer view
+            document.getElementById('customer-view-amount').textContent = '£' + customerCharge.toFixed(2);
+            document.getElementById('customer-view-fee').textContent = '£' + networkFee.toFixed(2);
+            
+            showScreen('screen-customer');
         }
 
         // Payment Processing
@@ -338,7 +375,7 @@
 
         // Donation Functions
         function addDonation(amount) {
-            alert('Thank you for your £' + amount.toFixed(2) + ' donation to support Rabbit iOS!');
+            window.open('https://donate.stripe.com/00wcN5cKpfD77KmeJz00000', '_blank');
         }
 
         function skipDonation() {
