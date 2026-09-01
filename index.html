@@ -3,30 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabbit - 0% Fee Web POS</title>
+    <title>Rabbit - 0% Fee Web POS for UK Merchants</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rabbit: {
+                            orange: '#FF6B35',
+                            dark: '#1a1a2e',
+                            darker: '#16162a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full text-center">
-        <div class="mb-8">
-            <i class="fas fa-carrot text-emerald-400 text-6xl mb-4"></i>
-            <h1 class="text-4xl font-bold mb-2">Rabbit</h1>
-            <p class="text-slate-400 text-lg">0% Fee Web Terminal</p>
-        </div>
-
-        <div class="bg-slate-800 rounded-2xl p-8 mb-6">
-            <h2 class="text-xl font-semibold mb-4">UK Merchant POS</h2>
-            <p class="text-slate-400 mb-6">Take payments with 0% effective merchant platform fees. Clean, fast, and mobile-optimized.</p>
-            
-            <a href="app.html" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition w-full">
-                <i class="fas fa-credit-card mr-2"></i>Launch Terminal
+<body class="bg-rabbit-darker text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-rabbit-darker/90 backdrop-blur-sm z-50 border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <img src="logo.jpg" alt="Rabbit Logo" class="h-10 w-10 rounded-lg object-cover">
+                <span class="font-bold text-xl">Rabbit</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-sm">
+                <a href="#features" class="hover:text-rabbit-orange transition">Features</a>
+                <a href="#how-it-works" class="hover:text-rabbit-orange transition">How It Works</a>
+                <a href="#pricing" class="hover:text-rabbit-orange transition">Pricing</a>
+            </div>
+            <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 px-4 py-2 rounded-lg font-semibold text-sm transition">
+                Launch Terminal
             </a>
         </div>
+    </nav>
 
-        <div class="text-slate-500 text-sm">
-            <p>Simple • Fast • Fee-Free</p>
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mb-8">
+                <img src="logo.jpg" alt="Rabbit Logo" class="h-24 w-24 rounded-2xl mx-auto mb-6 object-cover shadow-2xl">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">
+                    Take Payments with
+                    <span class="text-rabbit-orange">0% Fees</span>
+                </h1>
+                <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
+                    The UK's first web-based POS terminal that lets merchants pass card network fees to customers. Keep 100% of every sale.
+                </p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center justify-center gap-2">
+                    <i class="fas fa-credit-card"></i>Start Taking Payments
+                </a>
+                <a href="#how-it-works" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center justify-center gap-2">
+                    <i class="fas fa-play-circle"></i>See How It Works
+                </a>
+            </div>
+            <div class="mt-12 flex justify-center gap-8 text-slate-400">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">0%</div>
+                    <div class="text-sm">Platform Fees</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">100%</div>
+                    <div class="text-sm">Merchant Payout</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white">< 2s</div>
+                    <div class="text-sm">Transaction Time</div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 bg-rabbit-dark">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4">Why Choose Rabbit?</h2>
+            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">Built for UK merchants who want to keep more of what they earn.</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
+                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-percentage text-rabbit-orange text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">0% Platform Fees</h3>
+                    <p class="text-slate-400">Unlike traditional POS systems, we don't take a cut. Pass card network fees to customers and keep 100%.</p>
+                </div>
+                
+                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
+                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-rabbit-orange text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Mobile First</h3>
+                    <p class="text-slate-400">Works on any device with a browser. No hardware required. Perfect for pop-ups, markets, and mobile businesses.</p>
+                </div>
+                
+                <div class="bg-slate-800/50 p-8 rounded-2xl border border-white/10 hover:border-rabbit-orange/50 transition">
+                    <div class="w-14 h-14 bg-rabbit-orange/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-bolt text-rabbit-orange text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Instant Setup</h3>
+                    <p class="text-slate-400">No application, no approval process, no waiting. Start taking payments in under 2 minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4">How It Works</h2>
+            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">Three simple steps to start accepting payments.</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+                    <h3 class="text-xl font-semibold mb-2">Enter Amount</h3>
+                    <p class="text-slate-400">Use the digital keypad or quick-add chips to enter the sale amount in GBP.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+                    <h3 class="text-xl font-semibold mb-2">Choose Fee Option</h3>
+                    <p class="text-slate-400">Pass the card fee to the customer (recommended) or absorb it at wholesale rates.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+                    <h3 class="text-xl font-semibold mb-2">Tap & Complete</h3>
+                    <p class="text-slate-400">Customer taps their card or device. Payment processed instantly with receipt.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-4 bg-rabbit-dark">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4">Transparent Pricing</h2>
+            <p class="text-slate-400 text-center mb-12 max-w-2xl mx-auto">No hidden fees. No monthly costs. No surprises.</p>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-8 border border-white/10">
+                <div class="text-center mb-8">
+                    <div class="text-5xl font-bold text-rabbit-orange mb-2">0%</div>
+                    <div class="text-slate-400">Platform Fee</div>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between items-center py-3 border-b border-white/10">
+                        <span class="text-slate-300">Card Network Fee</span>
+                        <span class="font-semibold">~1.2% + 10p</span>
+                    </div>
+                    <div class="flex justify-between items-center py-3 border-b border-white/10">
+                        <span class="text-slate-300">Monthly Fee</span>
+                        <span class="font-semibold text-rabbit-orange">£0</span>
+                    </div>
+                    <div class="flex justify-between items-center py-3 border-b border-white/10">
+                        <span class="text-slate-300">Hardware Required</span>
+                        <span class="font-semibold text-rabbit-orange">None</span>
+                    </div>
+                    <div class="flex justify-between items-center py-3">
+                        <span class="text-slate-300">Setup Time</span>
+                        <span class="font-semibold">< 2 minutes</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-block">
+                        Start Free Today
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-4">Ready to Keep 100% of Your Sales?</h2>
+            <p class="text-slate-400 mb-8 text-lg">Join UK merchants who are saving thousands with Rabbit.</p>
+            <a href="app.html" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg transition inline-flex items-center gap-2">
+                <i class="fas fa-rocket"></i>Launch Terminal Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rabbit-dark py-12 px-4 border-t border-white/10">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <img src="logo.jpg" alt="Rabbit Logo" class="h-8 w-8 rounded-lg object-cover">
+                    <span class="font-bold">Rabbit</span>
+                </div>
+                <div class="flex gap-6 text-sm text-slate-400">
+                    <a href="#" class="hover:text-white transition">Privacy</a>
+                    <a href="#" class="hover:text-white transition">Terms</a>
+                    <a href="#" class="hover:text-white transition">Contact</a>
+                </div>
+                <div class="text-slate-400 text-sm">
+                    © 2026 Rabbit. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
