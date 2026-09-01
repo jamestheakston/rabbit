@@ -6,6 +6,22 @@
     <title>Rabbit - 0% Fee Web POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rabbit: {
+                            orange: '#FF6B35',
+                            bg: '#f5f4f0',
+                            dark: '#1a1a2e',
+                            darker: '#16162a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         @keyframes pulse-nfc {
             0%, 100% { transform: scale(1); opacity: 1; }
@@ -25,17 +41,17 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen">
+<body class="bg-rabbit-bg text-rabbit-dark min-h-screen">
     <div id="app" class="max-w-md mx-auto min-h-screen flex flex-col">
         
         <!-- Header -->
-        <header class="p-4 border-b border-slate-700">
+        <header class="p-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <i class="fas fa-carrot text-emerald-400 text-xl"></i>
+                    <img src="logo.jpg" alt="Rabbit Logo" class="h-8 w-8 rounded-lg object-cover">
                     <span class="font-bold text-lg">Rabbit</span>
                 </div>
-                <span class="text-xs text-slate-400">0% Fee Terminal</span>
+                <span class="text-xs text-gray-500">0% Fee Terminal</span>
             </div>
         </header>
 
@@ -43,70 +59,70 @@
         <div id="screen-amount" class="flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center">
                 <div class="text-center mb-8">
-                    <p class="text-slate-400 text-sm mb-2">Enter Amount</p>
-                    <div class="text-5xl font-bold text-emerald-400" id="amount-display">£0.00</div>
+                    <p class="text-gray-500 text-sm mb-2">Enter Amount</p>
+                    <div class="text-5xl font-bold text-rabbit-orange" id="amount-display">£0.00</div>
                 </div>
                 
                 <!-- Quick Add Chips -->
                 <div class="flex justify-center gap-3 mb-6">
-                    <button onclick="addAmount(5)" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm transition">+£5</button>
-                    <button onclick="addAmount(10)" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm transition">+£10</button>
-                    <button onclick="addAmount(20)" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm transition">+£20</button>
+                    <button onclick="addAmount(5)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£5</button>
+                    <button onclick="addAmount(10)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£10</button>
+                    <button onclick="addAmount(20)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£20</button>
                 </div>
             </div>
 
             <!-- Keypad -->
             <div class="grid grid-cols-3 gap-3 mb-4">
-                <button onclick="pressKey('1')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">1</button>
-                <button onclick="pressKey('2')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">2</button>
-                <button onclick="pressKey('3')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">3</button>
-                <button onclick="pressKey('4')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">4</button>
-                <button onclick="pressKey('5')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">5</button>
-                <button onclick="pressKey('6')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">6</button>
-                <button onclick="pressKey('7')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">7</button>
-                <button onclick="pressKey('8')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">8</button>
-                <button onclick="pressKey('9')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">9</button>
-                <button onclick="clearAmount()" class="bg-red-900/50 hover:bg-red-800/50 p-4 rounded-xl text-xl font-semibold transition text-red-300">C</button>
-                <button onclick="pressKey('0')" class="bg-slate-800 hover:bg-slate-700 p-4 rounded-xl text-2xl font-semibold transition">0</button>
-                <button onclick="deleteDigit()" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl text-xl font-semibold transition"><i class="fas fa-backspace"></i></button>
+                <button onclick="pressKey('1')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">1</button>
+                <button onclick="pressKey('2')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">2</button>
+                <button onclick="pressKey('3')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">3</button>
+                <button onclick="pressKey('4')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">4</button>
+                <button onclick="pressKey('5')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">5</button>
+                <button onclick="pressKey('6')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">6</button>
+                <button onclick="pressKey('7')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">7</button>
+                <button onclick="pressKey('8')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">8</button>
+                <button onclick="pressKey('9')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">9</button>
+                <button onclick="clearAmount()" class="bg-red-100 hover:bg-red-200 p-4 rounded-xl text-xl font-semibold transition text-red-600 border border-red-200">C</button>
+                <button onclick="pressKey('0')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">0</button>
+                <button onclick="deleteDigit()" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-xl font-semibold transition border border-gray-200"><i class="fas fa-backspace"></i></button>
             </div>
 
-            <button id="continue-btn" onclick="showFeeModal()" disabled class="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-700 disabled:text-slate-500 p-4 rounded-xl font-semibold text-lg transition">
+            <button id="continue-btn" onclick="showFeeModal()" disabled class="w-full bg-rabbit-orange hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 p-4 rounded-xl font-semibold text-lg transition">
                 Continue to Fee Options
             </button>
         </div>
 
         <!-- Screen 2: Fee Selection Modal -->
-        <div id="fee-modal" class="hidden fixed inset-0 bg-slate-900/95 flex items-center justify-center p-4 z-50">
-            <div class="bg-slate-800 rounded-2xl p-6 max-w-sm w-full">
-                <h2 class="text-xl font-bold mb-2 text-center">Card Fee Option</h2>
-                <p class="text-slate-400 text-sm text-center mb-6">Choose how to handle card network fees</p>
+        <div id="fee-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+                <h2 class="text-xl font-bold mb-2 text-center text-rabbit-dark">Card Fee Option</h2>
+                <p class="text-gray-500 text-sm text-center mb-6">Choose how to handle card network fees</p>
 
                 <div class="space-y-3 mb-6">
-                    <button onclick="selectFeeMode('pass')" class="w-full bg-emerald-600 hover:bg-emerald-500 p-4 rounded-xl text-left transition border-2 border-emerald-400">
+                    <button onclick="selectFeeMode('pass')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl text-left transition border-2 border-rabbit-orange text-white">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-emerald-300"></i>
+                            <i class="fas fa-check-circle text-white"></i>
                             <div>
                                 <div class="font-semibold">Pass Card Fee</div>
-                                <div class="text-sm text-emerald-200">0% Net to You • Recommended</div>
+                                <div class="text-sm text-orange-100">0% Net to You • Recommended</div>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-300 mt-2 ml-8">Customer pays network fee (~1.2% + 10p). You receive 100% of sale amount.</p>
+                        <p class="text-xs text-orange-100 mt-2 ml-8">Customer pays network fee (~1.2% + 10p). You receive 100% of sale amount.</p>
                     </button>
 
-                    <button onclick="selectFeeMode('absorb')" class="w-full bg-slate-700 hover:bg-slate-600 p-4 rounded-xl text-left transition border-2 border-transparent">
+                    <button onclick="selectFeeMode('absorb')" class="w-full bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-left transition border-2 border-transparent text-rabbit-dark">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-percentage text-slate-400"></i>
+                            <i class="fas fa-percentage text-gray-500"></i>
                             <div>
                                 <div class="font-semibold">Absorb Card Fee</div>
-                                <div class="text-sm text-slate-300">Wholesale Rate</div>
+                                <div class="text-sm text-gray-500">Wholesale Rate</div>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400 mt-2 ml-8">Customer pays exact amount. You pay wholesale network fee.</p>
+                        <p class="text-xs text-gray-400 mt-2 ml-8">Customer pays exact amount. You pay wholesale network fee.</p>
                     </button>
                 </div>
 
-                <button onclick="hideFeeModal()" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-xl text-sm transition">
+                <button onclick="hideFeeModal()" class="w-full bg-gray-200 hover:bg-gray-300 p-3 rounded-xl text-sm transition text-rabbit-dark">
                     Back
                 </button>
             </div>
@@ -116,29 +132,29 @@
         <div id="screen-tap" class="hidden flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center items-center">
                 <div class="pulse-nfc mb-6">
-                    <i class="fas fa-wifi text-6xl text-emerald-400 rotate-90"></i>
+                    <i class="fas fa-wifi text-6xl text-rabbit-orange rotate-90"></i>
                 </div>
                 <h2 class="text-2xl font-bold mb-2">Ready to Tap</h2>
-                <p class="text-slate-400 text-sm mb-8">Present card or device to terminal</p>
+                <p class="text-gray-500 text-sm mb-8">Present card or device to terminal</p>
 
-                <div class="bg-slate-800 rounded-xl p-4 w-full mb-4">
+                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-slate-400">Customer Charge</span>
-                        <span class="text-2xl font-bold text-emerald-400" id="customer-charge">£0.00</span>
+                        <span class="text-gray-500">Customer Charge</span>
+                        <span class="text-2xl font-bold text-rabbit-orange" id="customer-charge">£0.00</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Your Net Payout</span>
-                        <span class="text-xl font-semibold text-white" id="merchant-net">£0.00</span>
+                        <span class="text-gray-500">Your Net Payout</span>
+                        <span class="text-xl font-semibold text-rabbit-dark" id="merchant-net">£0.00</span>
                     </div>
                 </div>
 
-                <div class="text-xs text-slate-500 text-center mb-6">
+                <div class="text-xs text-gray-400 text-center mb-6">
                     <i class="fas fa-info-circle mr-1"></i>
                     Card network fees apply (Visa/Mastercard)
                 </div>
             </div>
 
-            <button onclick="processPayment()" class="w-full bg-emerald-500 hover:bg-emerald-600 p-4 rounded-xl font-semibold text-lg transition">
+            <button onclick="processPayment()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
                 <i class="fas fa-credit-card mr-2"></i>Simulate Tap / Process Payment
             </button>
         </div>
@@ -146,75 +162,75 @@
         <!-- Screen 4: Payment Complete -->
         <div id="screen-complete" class="hidden flex-1 flex flex-col p-4">
             <div class="flex-1 flex flex-col justify-center items-center">
-                <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6">
+                <div class="w-20 h-20 bg-rabbit-orange rounded-full flex items-center justify-center mb-6">
                     <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                         <path class="checkmark-animate" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold mb-2">Payment Complete</h2>
-                <p class="text-slate-400 text-sm mb-6">Transaction successful</p>
+                <p class="text-gray-500 text-sm mb-6">Transaction successful</p>
 
-                <div class="bg-slate-800 rounded-xl p-4 w-full mb-4">
+                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
                     <div class="space-y-3">
                         <div class="flex justify-between">
-                            <span class="text-slate-400">Sale Amount</span>
+                            <span class="text-gray-500">Sale Amount</span>
                             <span class="font-semibold" id="receipt-amount">£0.00</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400">Card Fee</span>
-                            <span class="font-semibold text-slate-300" id="receipt-fee">£0.00</span>
+                            <span class="text-gray-500">Card Fee</span>
+                            <span class="font-semibold text-gray-400" id="receipt-fee">£0.00</span>
                         </div>
-                        <div class="border-t border-slate-700 pt-3 flex justify-between">
-                            <span class="text-emerald-400 font-semibold">Merchant Payout</span>
-                            <span class="font-bold text-emerald-400 text-lg" id="receipt-payout">£0.00</span>
+                        <div class="border-t border-gray-200 pt-3 flex justify-between">
+                            <span class="text-rabbit-orange font-semibold">Merchant Payout</span>
+                            <span class="font-bold text-rabbit-orange text-lg" id="receipt-payout">£0.00</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Send Receipt -->
                 <div class="w-full mb-4">
-                    <p class="text-sm text-slate-400 mb-2">Send Receipt</p>
+                    <p class="text-sm text-gray-500 mb-2">Send Receipt</p>
                     <div class="flex gap-2">
-                        <input type="text" id="receipt-input" placeholder="Email or mobile number" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
-                        <button onclick="showQRReceipt()" class="bg-slate-700 hover:bg-slate-600 px-4 rounded-lg transition">
+                        <input type="text" id="receipt-input" placeholder="Email or mobile number" class="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-rabbit-orange">
+                        <button onclick="showQRReceipt()" class="bg-gray-100 hover:bg-gray-200 px-4 rounded-lg transition border border-gray-200">
                             <i class="fas fa-qrcode"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- iOS Fund Callout -->
-                <div class="bg-gradient-to-r from-emerald-900/50 to-slate-800 border border-emerald-700/50 rounded-xl p-4 w-full mb-4">
+                <div class="bg-gradient-to-r from-orange-100 to-white border border-orange-200 rounded-xl p-4 w-full mb-4">
                     <div class="flex items-start gap-3">
-                        <i class="fab fa-apple text-emerald-400 text-xl mt-1"></i>
+                        <i class="fab fa-apple text-rabbit-orange text-xl mt-1"></i>
                         <div class="flex-1">
-                            <p class="font-semibold text-sm mb-1">Support Rabbit iOS App</p>
-                            <p class="text-xs text-slate-400 mb-3">Help fund our upcoming iPhone app release with an optional donation.</p>
+                            <p class="font-semibold text-sm mb-1 text-rabbit-dark">Support Rabbit iOS App</p>
+                            <p class="text-xs text-gray-500 mb-3">Help fund our upcoming iPhone app release with an optional donation.</p>
                             <div class="flex gap-2">
-                                <button onclick="addDonation(1)" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-sm transition">+£1</button>
-                                <button onclick="addDonation(2.50)" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-sm transition">+£2.50</button>
-                                <button onclick="skipDonation()" class="bg-slate-600 hover:bg-slate-500 px-3 py-1 rounded text-xs transition">Skip</button>
+                                <button onclick="addDonation(1)" class="bg-rabbit-orange hover:bg-orange-600 px-3 py-1 rounded text-sm transition text-white">+£1</button>
+                                <button onclick="addDonation(2.50)" class="bg-rabbit-orange hover:bg-orange-600 px-3 py-1 rounded text-sm transition text-white">+£2.50</button>
+                                <button onclick="skipDonation()" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs transition text-rabbit-dark">Skip</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="startNewSale()" class="w-full bg-emerald-500 hover:bg-emerald-600 p-4 rounded-xl font-semibold text-lg transition">
+            <button onclick="startNewSale()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
                 <i class="fas fa-plus mr-2"></i>Start New Sale
             </button>
         </div>
 
         <!-- QR Receipt Modal -->
-        <div id="qr-modal" class="hidden fixed inset-0 bg-slate-900/95 flex items-center justify-center p-4 z-50">
-            <div class="bg-slate-800 rounded-2xl p-6 max-w-sm w-full text-center">
-                <h3 class="text-lg font-bold mb-4">Receipt QR Code</h3>
-                <div class="bg-white p-4 rounded-xl mb-4 inline-block">
-                    <div class="w-32 h-32 bg-slate-200 flex items-center justify-center">
-                        <i class="fas fa-qrcode text-6xl text-slate-800"></i>
+        <div id="qr-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-xl">
+                <h3 class="text-lg font-bold mb-4 text-rabbit-dark">Receipt QR Code</h3>
+                <div class="bg-gray-100 p-4 rounded-xl mb-4 inline-block">
+                    <div class="w-32 h-32 bg-white flex items-center justify-center">
+                        <i class="fas fa-qrcode text-6xl text-rabbit-dark"></i>
                     </div>
                 </div>
-                <p class="text-sm text-slate-400 mb-4">Scan to view receipt</p>
-                <button onclick="hideQRModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 p-3 rounded-xl font-semibold transition">
+                <p class="text-sm text-gray-500 mb-4">Scan to view receipt</p>
+                <button onclick="hideQRModal()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-3 rounded-xl font-semibold transition text-white">
                     Done
                 </button>
             </div>
