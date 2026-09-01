@@ -531,8 +531,8 @@
         const SUPABASE_URL = 'https://kiirewgajdcagrkjznzd.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_N26VX9GlFsTK_ECpS-FTWw_0K1VWxPi';
         
-        // Stripe Configuration - REPLACE WITH YOUR STRIPE PUBLISHABLE KEY
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_STRIPE_KEY_HERE';
+        // Stripe Configuration
+        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51U7YZRIgHrqGQ08gbdu7U7Q4sFTSliP3HjOvRbE8kWAuQ5rXfe4FUnqdB6y6E67KybV4eA8CdrA0tKBOTqPmvW1l00FUNaZ5GC';
         
         // Initialize Supabase
         let SupabaseClient;
@@ -903,26 +903,35 @@
         }
 
         async function createPaymentIntent() {
-            // NOTE: This function requires a backend server to be secure
-            // For production, you should create a payment intent on your server
-            // This is a simplified version for demonstration
+            // Call Supabase Edge Function to create payment intent
+            const currency = userSettings?.currency?.toLowerCase() || 'gbp';
             
-            // Simulated response - in production, call your backend:
-            // const response = await fetch('/create-payment-intent', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ amount: Math.round(customerCharge * 100), currency: 'gbp' })
-            // });
-            // return await response.json();
-            
-            // For demo, return a mock client secret
-            // In production, this would come from your Stripe backend
-            alert('For actual payments, you need a backend server to create payment intents securely. This demo shows the UI flow.');
-            
-            // Simulate successful payment for demo
-            return {
-                clientSecret: 'pi_mock_secret_' + Date.now()
-            };
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/functions/v1/create-payment-intent`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            amount: Math.round(customerCharge * 100),
+                            currency: currency
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to create payment intent');
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Payment intent creation error:', error);
+                throw error;
+            }
         }
 
         // NFC Functions
