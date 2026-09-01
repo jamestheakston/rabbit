@@ -95,30 +95,30 @@
         <!-- Screen 2: Fee Selection Modal -->
         <div id="fee-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-                <h2 class="text-xl font-bold mb-2 text-center text-rabbit-dark">Card Fee Option</h2>
-                <p class="text-gray-500 text-sm text-center mb-6">Choose how to handle card network fees</p>
+                <h2 class="text-xl font-bold mb-2 text-center text-rabbit-dark">Payment Fee Option</h2>
+                <p class="text-gray-500 text-sm text-center mb-6">Help support local businesses</p>
 
                 <div class="space-y-3 mb-6">
                     <button onclick="selectFeeMode('pass')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl text-left transition border-2 border-rabbit-orange text-white">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-white"></i>
+                            <i class="fas fa-heart text-white"></i>
                             <div>
-                                <div class="font-semibold">Pass Card Fee</div>
-                                <div class="text-sm text-orange-100">0% Net to You • Recommended</div>
+                                <div class="font-semibold">Support Local Business</div>
+                                <div class="text-sm text-orange-100">Recommended • Merchant keeps full amount</div>
                             </div>
                         </div>
-                        <p class="text-xs text-orange-100 mt-2 ml-8">Customer pays network fee (~1.2% + 10p). You receive 100% of sale amount.</p>
+                        <p class="text-xs text-orange-100 mt-2 ml-8">Small card fee (~1.2% + 10p) added. This helps the merchant receive 100% of your purchase.</p>
                     </button>
 
                     <button onclick="selectFeeMode('absorb')" class="w-full bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-left transition border-2 border-transparent text-rabbit-dark">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-percentage text-gray-500"></i>
+                            <i class="fas fa-tag text-gray-500"></i>
                             <div>
-                                <div class="font-semibold">Absorb Card Fee</div>
-                                <div class="text-sm text-gray-500">Wholesale Rate</div>
+                                <div class="font-semibold">Pay Exact Amount</div>
+                                <div class="text-sm text-gray-500">No extra charge</div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2 ml-8">Customer pays exact amount. You pay wholesale network fee.</p>
+                        <p class="text-xs text-gray-400 mt-2 ml-8">Pay only the displayed amount. The merchant covers the card network fee.</p>
                     </button>
                 </div>
 
