@@ -253,8 +253,8 @@
             </div>
         </div>
 
-        <!-- POS Container (Mobile-focused) -->
-        <div id="pos-container" class="hidden max-w-md mx-auto min-h-screen flex flex-col bg-white md:border md:border-gray-200 md:rounded-2xl md:my-4 md:shadow-xl">
+        <!-- POS Container (Full-screen) -->
+        <div id="pos-container" class="hidden min-h-screen flex flex-col bg-white">
             <!-- POS Header -->
             <header class="p-4 border-b border-gray-200 flex items-center justify-between">
                 <button onclick="showScreen('screen-dashboard')" class="text-gray-600 hover:text-rabbit-orange transition">
@@ -299,45 +299,50 @@
                 <button onclick="deleteDigit()" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-xl font-semibold transition border border-gray-200"><i class="fas fa-backspace"></i></button>
             </div>
 
-            <button id="continue-btn" onclick="showFeeModal()" disabled class="w-full bg-rabbit-orange hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 p-4 rounded-xl font-semibold text-lg transition">
+            <button id="continue-btn" onclick="showScreen('screen-fee')" disabled class="w-full bg-rabbit-orange hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 p-4 rounded-xl font-semibold text-lg transition">
                 Continue to Fee Options
             </button>
         </div>
 
-        <!-- Screen 2: Fee Selection Modal -->
-        <div id="fee-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-                <h2 class="text-xl font-bold mb-2 text-center text-rabbit-dark">Payment Fee Option</h2>
-                <p class="text-gray-500 text-sm text-center mb-6">Help support local businesses</p>
+        <!-- Screen 2: Fee Selection -->
+        <div id="screen-fee" class="hidden flex-1 flex flex-col p-4">
+            <div class="flex-1 flex flex-col justify-center">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Payment Fee Option</h2>
+                    <p class="text-gray-500">Help support local businesses</p>
+                </div>
 
-                <div class="space-y-3 mb-6">
-                    <button onclick="selectFeeMode('pass')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl text-left transition border-2 border-rabbit-orange text-white">
+                <div class="space-y-4 mb-6">
+                    <button onclick="selectFeeMode('pass')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-6 rounded-xl text-left transition border-2 border-rabbit-orange text-white">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-heart text-white"></i>
+                            <i class="fas fa-heart text-white text-xl"></i>
                             <div>
-                                <div class="font-semibold">Support Local Business</div>
+                                <div class="font-semibold text-lg">Support Local Business</div>
                                 <div class="text-sm text-orange-100">Recommended • Merchant keeps full amount</div>
                             </div>
                         </div>
-                        <p class="text-xs text-orange-100 mt-2 ml-8">Small card fee (~1.2% + 10p) added. This helps the merchant receive 100% of your purchase.</p>
+                        <p class="text-xs text-orange-100 mt-3 ml-10">Small card fee (~1.2% + 10p) added. This helps the merchant receive 100% of your purchase.</p>
                     </button>
 
-                    <button onclick="selectFeeMode('absorb')" class="w-full bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-left transition border-2 border-transparent text-rabbit-dark">
+                    <button onclick="selectFeeMode('absorb')" class="w-full bg-gray-100 hover:bg-gray-200 p-6 rounded-xl text-left transition border-2 border-transparent text-rabbit-dark">
                         <div class="flex items-center gap-3">
-                            <i class="fas fa-tag text-gray-500"></i>
+                            <i class="fas fa-tag text-gray-500 text-xl"></i>
                             <div>
-                                <div class="font-semibold">Pay Exact Amount</div>
+                                <div class="font-semibold text-lg">Pay Exact Amount</div>
                                 <div class="text-sm text-gray-500">No extra charge</div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2 ml-8">Pay only the displayed amount. The merchant covers the card network fee.</p>
+                        <p class="text-xs text-gray-400 mt-3 ml-10">Pay only the displayed amount. The merchant covers the card network fee.</p>
                     </button>
                 </div>
-
-                <button onclick="hideFeeModal()" class="w-full bg-gray-200 hover:bg-gray-300 p-3 rounded-xl text-sm transition text-rabbit-dark">
-                    Back
-                </button>
             </div>
+
+            <button onclick="showScreen('screen-amount')" class="w-full bg-gray-200 hover:bg-gray-300 p-4 rounded-xl font-semibold text-lg transition text-rabbit-dark">
+                Back
+            </button>
         </div>
 
         <!-- Screen 3: Customer View -->
@@ -530,6 +535,7 @@
             const session = localStorage.getItem('rabbit_session');
             if (session) {
                 currentUser = JSON.parse(session);
+                // Only show onboarding if user hasn't completed it before
                 if (!userSettings || !userSettings.onboardingComplete) {
                     showScreen('screen-onboarding');
                 } else {
@@ -677,10 +683,11 @@
             document.getElementById('pos-container').classList.add('hidden');
             
             // Show requested screen
-            if (screenId === 'screen-amount' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-complete') {
+            if (screenId === 'screen-amount' || screenId === 'screen-fee' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-complete') {
                 document.getElementById('pos-container').classList.remove('hidden');
                 // Hide all POS screens
                 document.getElementById('screen-amount').classList.add('hidden');
+                document.getElementById('screen-fee').classList.add('hidden');
                 document.getElementById('screen-customer').classList.add('hidden');
                 document.getElementById('screen-tap').classList.add('hidden');
                 document.getElementById('screen-complete').classList.add('hidden');
@@ -725,15 +732,7 @@
             updateDisplay();
         }
 
-        // Fee Modal Functions
-        function showFeeModal() {
-            document.getElementById('fee-modal').classList.remove('hidden');
-        }
-
-        function hideFeeModal() {
-            document.getElementById('fee-modal').classList.add('hidden');
-        }
-
+        // Fee Selection Functions
         function selectFeeMode(mode) {
             feeMode = mode;
             networkFee = (currentAmount * 0.012) + 0.10;
@@ -749,8 +748,6 @@
             const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
             document.getElementById('customer-charge').textContent = currencySymbol + customerCharge.toFixed(2);
             document.getElementById('merchant-net').textContent = currencySymbol + merchantNet.toFixed(2);
-            
-            hideFeeModal();
             
             // Update customer view
             document.getElementById('customer-view-amount').textContent = currencySymbol + customerCharge.toFixed(2);
