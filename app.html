@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabbit - 0% Fee Web POS</title>
+    <title>Rabbit - Payment Links</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://js.stripe.com/v3/"></script>
@@ -52,7 +52,7 @@
                 <div class="text-center mb-8">
                     <img src="logo.jpg" alt="Rabbit Logo" class="h-20 w-20 rounded-2xl mx-auto mb-4 object-cover shadow-lg">
                     <h1 class="text-3xl font-bold mb-2">Rabbit</h1>
-                    <p class="text-gray-500">0% Fee Terminal</p>
+                    <p class="text-gray-500">Payment Links</p>
                 </div>
 
                 <div id="auth-login" class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
@@ -181,7 +181,7 @@
                 </div>
                 <div class="flex-1 flex justify-center gap-8">
                     <button onclick="showScreen('screen-dashboard')" class="text-rabbit-orange font-semibold">Dashboard</button>
-                    <button onclick="showScreen('screen-amount')" class="text-gray-600 hover:text-rabbit-orange transition">Terminal</button>
+                    <button onclick="showScreen('screen-create-link')" class="text-gray-600 hover:text-rabbit-orange transition">Create Link</button>
                     <button onclick="handleLogout()" class="text-gray-600 hover:text-rabbit-orange transition">Logout</button>
                 </div>
             </nav>
@@ -202,7 +202,7 @@
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 p-4">
                 <button onclick="showScreen('screen-dashboard'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-600">Dashboard</button>
-                <button onclick="showScreen('screen-amount'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-600">Terminal</button>
+                <button onclick="showScreen('screen-create-link'); toggleMobileMenu()" class="block w-full text-left py-2 text-gray-600">Create Link</button>
                 <button onclick="handleLogout()" class="block w-full text-left py-2 text-gray-600">Logout</button>
             </div>
 
@@ -210,43 +210,43 @@
                 <div class="max-w-6xl mx-auto">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-bold mb-1">Dashboard</h1>
-                            <p class="text-gray-500">Welcome back! Here's your business overview.</p>
+                            <h1 class="text-2xl md:text-3xl font-bold mb-1">Payment Links</h1>
+                            <p class="text-gray-500">Create and share payment links with your customers.</p>
                         </div>
-                        <button onclick="showScreen('screen-amount')" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition flex items-center gap-2">
+                        <button onclick="showScreen('screen-create-link')" class="bg-rabbit-orange hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition flex items-center gap-2">
                             <i class="fas fa-plus"></i>
-                            New Sale
+                            Create Payment Link
                         </button>
                     </div>
 
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                            <p class="text-gray-500 text-sm mb-1">Today's Sales</p>
-                            <p class="text-2xl font-bold text-rabbit-orange" id="stat-today">£0.00</p>
+                            <p class="text-gray-500 text-sm mb-1">Total Revenue</p>
+                            <p class="text-2xl font-bold text-rabbit-orange" id="stat-revenue">£0.00</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                            <p class="text-gray-500 text-sm mb-1">Transactions</p>
-                            <p class="text-2xl font-bold" id="stat-transactions">0</p>
+                            <p class="text-gray-500 text-sm mb-1">Active Links</p>
+                            <p class="text-2xl font-bold" id="stat-links">0</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                            <p class="text-gray-500 text-sm mb-1">This Week</p>
-                            <p class="text-2xl font-bold" id="stat-week">£0.00</p>
+                            <p class="text-gray-500 text-sm mb-1">Total Payments</p>
+                            <p class="text-2xl font-bold" id="stat-payments">0</p>
                         </div>
                         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                            <p class="text-gray-500 text-sm mb-1">This Month</p>
-                            <p class="text-2xl font-bold" id="stat-month">£0.00</p>
+                            <p class="text-gray-500 text-sm mb-1">Conversion Rate</p>
+                            <p class="text-2xl font-bold" id="stat-conversion">0%</p>
                         </div>
                     </div>
 
-                    <!-- Recent Transactions -->
+                    <!-- Payment Links List -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <div class="p-4 border-b border-gray-200">
-                            <h2 class="font-bold">Recent Transactions</h2>
+                            <h2 class="font-bold">Your Payment Links</h2>
                         </div>
-                        <div id="transactions-list" class="divide-y divide-gray-100">
+                        <div id="links-list" class="divide-y divide-gray-100">
                             <div class="p-4 text-center text-gray-500">
-                                No transactions yet. Start your first sale!
+                                No payment links yet. Create your first one!
                             </div>
                         </div>
                     </div>
@@ -254,273 +254,104 @@
             </div>
         </div>
 
-        <!-- POS Container (Full-screen) -->
-        <div id="pos-container" class="hidden min-h-screen flex flex-col bg-white">
-            <!-- POS Header -->
-            <header class="p-4 border-b border-gray-200 flex items-center justify-between">
-                <button onclick="showScreen('screen-dashboard')" class="text-gray-600 hover:text-rabbit-orange transition">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <div class="flex items-center gap-2">
-                    <img src="logo.jpg" alt="Rabbit Logo" class="h-6 w-6 rounded-lg object-cover">
-                    <span class="font-bold">Terminal</span>
-                </div>
-                <div class="w-8"></div>
-            </header>
-
-            <!-- Screen 1: Amount Keypad -->
-        <div id="screen-amount" class="flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center">
-                <div class="text-center mb-8">
-                    <p class="text-gray-500 text-sm mb-2">Enter Amount</p>
-                    <div class="text-5xl font-bold text-rabbit-orange" id="amount-display">£0.00</div>
-                </div>
-                
-                <!-- Quick Add Chips -->
-                <div class="flex justify-center gap-3 mb-6">
-                    <button onclick="addAmount(5)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£5</button>
-                    <button onclick="addAmount(10)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£10</button>
-                    <button onclick="addAmount(20)" class="bg-white hover:bg-gray-100 px-4 py-2 rounded-lg text-sm transition border border-gray-200">+£20</button>
-                </div>
-            </div>
-
-            <!-- Keypad -->
-            <div class="grid grid-cols-3 gap-3 mb-4">
-                <button onclick="pressKey('1')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">1</button>
-                <button onclick="pressKey('2')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">2</button>
-                <button onclick="pressKey('3')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">3</button>
-                <button onclick="pressKey('4')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">4</button>
-                <button onclick="pressKey('5')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">5</button>
-                <button onclick="pressKey('6')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">6</button>
-                <button onclick="pressKey('7')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">7</button>
-                <button onclick="pressKey('8')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">8</button>
-                <button onclick="pressKey('9')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">9</button>
-                <button onclick="clearAmount()" class="bg-red-100 hover:bg-red-200 p-4 rounded-xl text-xl font-semibold transition text-red-600 border border-red-200">C</button>
-                <button onclick="pressKey('0')" class="bg-white hover:bg-gray-100 p-4 rounded-xl text-2xl font-semibold transition border border-gray-200 shadow-sm">0</button>
-                <button onclick="deleteDigit()" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-xl text-xl font-semibold transition border border-gray-200"><i class="fas fa-backspace"></i></button>
-            </div>
-
-            <button id="continue-btn" onclick="showScreen('screen-fee')" disabled class="w-full bg-rabbit-orange hover:bg-orange-600 disabled:bg-gray-200 disabled:text-gray-400 p-4 rounded-xl font-semibold text-lg transition">
-                Continue to Fee Options
-            </button>
-        </div>
-
-        <!-- Screen 2: Fee Selection -->
-        <div id="screen-fee" class="hidden flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-heart text-white text-2xl"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold mb-2">Payment Fee Option</h2>
-                    <p class="text-gray-500">Help support local businesses</p>
-                </div>
-
-                <div class="space-y-4 mb-6">
-                    <button onclick="selectFeeMode('pass')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-6 rounded-xl text-left transition border-2 border-rabbit-orange text-white">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-heart text-white text-xl"></i>
-                            <div>
-                                <div class="font-semibold text-lg">Support Local Business</div>
-                                <div class="text-sm text-orange-100">Recommended • Merchant keeps full amount</div>
-                            </div>
-                        </div>
-                        <p class="text-xs text-orange-100 mt-3 ml-10">Small card fee (~1.2% + 10p) added. This helps the merchant receive 100% of your purchase.</p>
+        <!-- Create Payment Link Screen -->
+        <div id="screen-create-link" class="hidden flex-1 flex flex-col">
+            <nav class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="showScreen('screen-dashboard')" class="text-gray-600 hover:text-rabbit-orange transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
                     </button>
+                    <span class="font-bold text-lg">Create Payment Link</span>
+                </div>
+            </nav>
 
-                    <button onclick="selectFeeMode('absorb')" class="w-full bg-gray-100 hover:bg-gray-200 p-6 rounded-xl text-left transition border-2 border-transparent text-rabbit-dark">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-tag text-gray-500 text-xl"></i>
+            <div class="flex-1 p-4 md:p-8 overflow-auto">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                        <div class="space-y-6">
                             <div>
-                                <div class="font-semibold text-lg">Pay Exact Amount</div>
-                                <div class="text-sm text-gray-500">No extra charge</div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Link Title</label>
+                                <input type="text" id="link-title" placeholder="e.g., Invoice #1234" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
                             </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Description (optional)</label>
+                                <textarea id="link-description" placeholder="What is this payment for?" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">£</span>
+                                    <input type="number" id="link-amount" placeholder="0.00" step="0.01" min="0" class="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                                <select id="link-currency" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-rabbit-orange">
+                                    <option value="gbp">British Pound (£)</option>
+                                    <option value="eur">Euro (€)</option>
+                                    <option value="usd">US Dollar ($)</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="link-recurring" class="w-5 h-5 text-rabbit-orange rounded border-gray-300 focus:ring-rabbit-orange">
+                                <label for="link-recurring" class="text-sm text-gray-700">Make this a recurring payment</label>
+                            </div>
+
+                            <button onclick="createPaymentLink()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
+                                Create Payment Link
+                            </button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-3 ml-10">Pay only the displayed amount. The merchant covers the card network fee.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Link Created Screen -->
+        <div id="screen-link-created" class="hidden flex-1 flex flex-col">
+            <nav class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="showScreen('screen-dashboard')" class="text-gray-600 hover:text-rabbit-orange transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
                     </button>
+                    <span class="font-bold text-lg">Payment Link Created</span>
                 </div>
-            </div>
+            </nav>
 
-            <button onclick="showScreen('screen-amount')" class="w-full bg-gray-200 hover:bg-gray-300 p-4 rounded-xl font-semibold text-lg transition text-rabbit-dark">
-                Back
-            </button>
-        </div>
-
-        <!-- Screen 3: Customer View -->
-        <div id="screen-customer" class="hidden flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center items-center">
-                <div class="w-16 h-16 bg-rabbit-orange rounded-full flex items-center justify-center mb-6">
-                    <i class="fas fa-pound-sign text-white text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold mb-2">Payment Required</h2>
-                <p class="text-gray-500 text-sm mb-8 text-center">Please complete your payment</p>
-
-                <div class="bg-white rounded-xl p-6 w-full mb-6 shadow-sm border border-gray-200 text-center">
-                    <p class="text-gray-500 text-sm mb-2">Amount to Pay</p>
-                    <div class="text-5xl font-bold text-rabbit-orange mb-4" id="customer-view-amount">£0.00</div>
-                    
-                    <div class="border-t border-gray-200 pt-4 mt-4">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-500">Card Fee</span>
-                            <span class="text-gray-400" id="customer-view-fee">£0.00</span>
+            <div class="flex-1 p-4 md:p-8 overflow-auto">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-green-600 text-2xl"></i>
                         </div>
-                    </div>
-                </div>
+                        <h2 class="text-2xl font-bold mb-2">Link Ready!</h2>
+                        <p class="text-gray-500 mb-6">Share this link with your customer to receive payment.</p>
 
-                <div class="text-xs text-gray-400 text-center mb-6">
-                    <i class="fas fa-lock mr-1"></i>
-                    Secure payment powered by Rabbit
-                </div>
-            </div>
-
-            <button onclick="showScreen('screen-tap')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-arrow-right mr-2"></i>Continue to Payment
-            </button>
-        </div>
-
-        <!-- Screen 4: Ready to Tap -->
-        <div id="screen-tap" class="hidden flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center items-center">
-                <div class="pulse-nfc mb-6">
-                    <i class="fas fa-wifi text-6xl text-rabbit-orange rotate-90"></i>
-                </div>
-                <h2 class="text-2xl font-bold mb-2" id="tap-status">Ready to Tap</h2>
-                <p class="text-gray-500 text-sm mb-8" id="tap-message">Present card or device to terminal</p>
-
-                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-500">Customer Charge</span>
-                        <span class="text-2xl font-bold text-rabbit-orange" id="customer-charge">£0.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">Your Net Payout</span>
-                        <span class="text-xl font-semibold text-rabbit-dark" id="merchant-net">£0.00</span>
-                    </div>
-                </div>
-
-                <div class="text-xs text-gray-400 text-center mb-6">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    <span id="nfc-status">NFC scanning active</span>
-                </div>
-            </div>
-
-            <div class="space-y-3">
-                <button onclick="showScreen('screen-card')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                    <i class="fas fa-credit-card mr-2"></i>Pay with Card
-                </button>
-                <button onclick="processPayment()" id="manual-pay-btn" class="w-full bg-gray-200 hover:bg-gray-300 p-4 rounded-xl font-semibold text-lg transition text-rabbit-dark">
-                    <i class="fas fa-hand-pointer mr-2"></i>Process Manually
-                </button>
-            </div>
-        </div>
-
-        <!-- Screen 5: Card Payment -->
-        <div id="screen-card" class="hidden flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center">
-                <h2 class="text-2xl font-bold mb-2">Card Payment</h2>
-                <p class="text-gray-500 text-sm mb-6">Enter card details to complete payment</p>
-
-                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-500">Amount</span>
-                        <span class="text-2xl font-bold text-rabbit-orange" id="card-amount">£0.00</span>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Details</label>
-                    <div id="card-element" class="p-3 border border-gray-200 rounded-lg bg-gray-50"></div>
-                    <div id="card-errors" class="text-red-500 text-sm mt-2"></div>
-                </div>
-
-                <div class="text-xs text-gray-400 text-center mb-4">
-                    <i class="fas fa-lock mr-1"></i>
-                    Secured by Stripe
-                </div>
-            </div>
-
-            <button onclick="processCardPayment()" id="card-pay-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-lock mr-2"></i>Pay Now
-            </button>
-            <button onclick="showScreen('screen-tap')" class="w-full bg-gray-200 hover:bg-gray-300 p-3 rounded-xl font-semibold text-sm transition text-rabbit-dark mt-3">
-                Back
-            </button>
-        </div>
-
-        <!-- Screen 5: Payment Complete -->
-        <div id="screen-complete" class="hidden flex-1 flex flex-col p-4">
-            <div class="flex-1 flex flex-col justify-center items-center">
-                <div class="w-20 h-20 bg-rabbit-orange rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                        <path class="checkmark-animate" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2">Payment Complete</h2>
-                <p class="text-gray-500 text-sm mb-6">Transaction successful</p>
-
-                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Sale Amount</span>
-                            <span class="font-semibold" id="receipt-amount">£0.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Card Fee</span>
-                            <span class="font-semibold text-gray-400" id="receipt-fee">£0.00</span>
-                        </div>
-                        <div class="border-t border-gray-200 pt-3 flex justify-between">
-                            <span class="text-rabbit-orange font-semibold">Merchant Payout</span>
-                            <span class="font-bold text-rabbit-orange text-lg" id="receipt-payout">£0.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Send Receipt -->
-                <div class="w-full mb-4">
-                    <p class="text-sm text-gray-500 mb-2">Send Receipt</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="receipt-input" placeholder="Email or mobile number" class="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-rabbit-orange">
-                        <button onclick="showQRReceipt()" class="bg-gray-100 hover:bg-gray-200 px-4 rounded-lg transition border border-gray-200">
-                            <i class="fas fa-qrcode"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- iOS Fund Callout -->
-                <div class="bg-gradient-to-r from-orange-100 to-white border border-orange-200 rounded-xl p-4 w-full mb-4">
-                    <div class="flex items-start gap-3">
-                        <i class="fab fa-apple text-rabbit-orange text-xl mt-1"></i>
-                        <div class="flex-1">
-                            <p class="font-semibold text-sm mb-1 text-rabbit-dark">Support Rabbit iOS App</p>
-                            <p class="text-xs text-gray-500 mb-3">Help fund our upcoming iPhone app release with an optional donation.</p>
-                            <div class="flex gap-2">
-                                <button onclick="addDonation(1)" class="bg-rabbit-orange hover:bg-orange-600 px-3 py-1 rounded text-sm transition text-white">+£1</button>
-                                <button onclick="addDonation(2.50)" class="bg-rabbit-orange hover:bg-orange-600 px-3 py-1 rounded text-sm transition text-white">+£2.50</button>
-                                <button onclick="skipDonation()" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-xs transition text-rabbit-dark">Skip</button>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="created-link-url" readonly class="flex-1 bg-transparent border-none focus:outline-none text-sm">
+                                <button onclick="copyLink()" class="bg-rabbit-orange hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                             </div>
                         </div>
+
+                        <div class="flex gap-3 justify-center">
+                            <button onclick="shareLink('email')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+                                <i class="fas fa-envelope mr-2"></i>Email
+                            </button>
+                            <button onclick="shareLink('sms')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+                                <i class="fas fa-sms mr-2"></i>SMS
+                            </button>
+                            <button onclick="shareLink('whatsapp')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+                                <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <button onclick="returnToDashboard()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
-            </button>
-        </div>
-
-        <!-- QR Receipt Modal -->
-        <div id="qr-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-xl">
-                <h3 class="text-lg font-bold mb-4 text-rabbit-dark">Receipt QR Code</h3>
-                <div class="bg-gray-100 p-4 rounded-xl mb-4 inline-block">
-                    <div class="w-32 h-32 bg-white flex items-center justify-center">
-                        <i class="fas fa-qrcode text-6xl text-rabbit-dark"></i>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-500 mb-4">Scan to view receipt</p>
-                <button onclick="hideQRModal()" class="w-full bg-rabbit-orange hover:bg-orange-600 p-3 rounded-xl font-semibold transition text-white">
-                    Done
-                </button>
             </div>
         </div>
 
@@ -554,13 +385,9 @@
         // State
         let currentUser = null;
         let userSettings = null;
+        let paymentLinks = [];
         let transactions = [];
-        let currentAmount = 0;
-        let feeMode = '';
-        let networkFee = 0;
-        let customerCharge = 0;
-        let merchantNet = 0;
-        let onboardingStep = 1;
+        let currentLinkId = null;
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -570,13 +397,16 @@
 
         // Local Storage Functions
         function saveToLocalStorage() {
+            localStorage.setItem('rabbit_payment_links', JSON.stringify(paymentLinks));
             localStorage.setItem('rabbit_transactions', JSON.stringify(transactions));
             localStorage.setItem('rabbit_settings', JSON.stringify(userSettings));
         }
 
         function loadFromLocalStorage() {
+            const savedLinks = localStorage.getItem('rabbit_payment_links');
             const savedTransactions = localStorage.getItem('rabbit_transactions');
             const savedSettings = localStorage.getItem('rabbit_settings');
+            if (savedLinks) paymentLinks = JSON.parse(savedLinks);
             if (savedTransactions) transactions = JSON.parse(savedTransactions);
             if (savedSettings) userSettings = JSON.parse(savedSettings);
         }
@@ -586,13 +416,8 @@
             const session = localStorage.getItem('rabbit_session');
             if (session) {
                 currentUser = JSON.parse(session);
-                // Only show onboarding if user hasn't completed it before
-                if (!userSettings || !userSettings.onboardingComplete) {
-                    showScreen('screen-onboarding');
-                } else {
-                    showScreen('screen-dashboard');
-                    updateDashboard();
-                }
+                showScreen('screen-dashboard');
+                updateDashboard();
             } else {
                 showScreen('screen-auth');
             }
@@ -675,50 +500,157 @@
         // Dashboard Functions
         function updateDashboard() {
             // Calculate stats
-            const today = new Date().toDateString();
-            const todayTransactions = transactions.filter(t => new Date(t.date).toDateString() === today);
-            const todayTotal = todayTransactions.reduce((sum, t) => sum + t.amount, 0);
-            
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            const weekTransactions = transactions.filter(t => new Date(t.date) >= weekAgo);
-            const weekTotal = weekTransactions.reduce((sum, t) => sum + t.amount, 0);
-            
-            const monthAgo = new Date();
-            monthAgo.setMonth(monthAgo.getMonth() - 1);
-            const monthTransactions = transactions.filter(t => new Date(t.date) >= monthAgo);
-            const monthTotal = monthTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const totalRevenue = transactions.reduce((sum, t) => sum + t.amount, 0);
+            const activeLinks = paymentLinks.filter(l => l.active).length;
+            const totalPayments = transactions.length;
+            const conversionRate = activeLinks > 0 ? Math.round((totalPayments / activeLinks) * 100) : 0;
 
             // Update stats display
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            document.getElementById('stat-today').textContent = currencySymbol + todayTotal.toFixed(2);
-            document.getElementById('stat-transactions').textContent = transactions.length;
-            document.getElementById('stat-week').textContent = currencySymbol + weekTotal.toFixed(2);
-            document.getElementById('stat-month').textContent = currencySymbol + monthTotal.toFixed(2);
+            const currencySymbol = '£';
+            document.getElementById('stat-revenue').textContent = currencySymbol + totalRevenue.toFixed(2);
+            document.getElementById('stat-links').textContent = activeLinks;
+            document.getElementById('stat-payments').textContent = totalPayments;
+            document.getElementById('stat-conversion').textContent = conversionRate + '%';
 
-            // Update transactions list
-            updateTransactionsList();
+            // Update links list
+            updateLinksList();
         }
 
-        function updateTransactionsList() {
-            const list = document.getElementById('transactions-list');
-            if (transactions.length === 0) {
-                list.innerHTML = '<div class="p-4 text-center text-gray-500">No transactions yet. Start your first sale!</div>';
+        function updateLinksList() {
+            const list = document.getElementById('links-list');
+            if (paymentLinks.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-gray-500">No payment links yet. Create your first one!</div>';
                 return;
             }
 
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            list.innerHTML = transactions.slice(-10).reverse().map(t => `
+            const currencySymbol = '£';
+            list.innerHTML = paymentLinks.slice(-10).reverse().map(l => `
                 <div class="p-4 flex justify-between items-center">
                     <div>
-                        <p class="font-semibold">${currencySymbol}${t.amount.toFixed(2)}</p>
-                        <p class="text-sm text-gray-500">${new Date(t.date).toLocaleDateString()}</p>
+                        <p class="font-semibold">${l.title}</p>
+                        <p class="text-sm text-gray-500">${currencySymbol}${l.amount.toFixed(2)} • ${l.currency.toUpperCase()}</p>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${t.feeMode === 'pass' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
-                        ${t.feeMode === 'pass' ? 'Fee Passed' : 'Fee Absorbed'}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${l.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">
+                            ${l.active ? 'Active' : 'Inactive'}
+                        </span>
+                        <button onclick="copyLinkById('${l.id}')" class="text-gray-500 hover:text-rabbit-orange transition">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        // Payment Link Functions
+        async function createPaymentLink() {
+            const title = document.getElementById('link-title').value;
+            const description = document.getElementById('link-description').value;
+            const amount = parseFloat(document.getElementById('link-amount').value);
+            const currency = document.getElementById('link-currency').value;
+            const recurring = document.getElementById('link-recurring').checked;
+
+            if (!title || !amount || amount <= 0) {
+                alert('Please fill in title and amount');
+                return;
+            }
+
+            // Create Stripe payment link
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/functions/v1/create-payment-link`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            description: description,
+                            amount: Math.round(amount * 100),
+                            currency: currency,
+                            recurring: recurring
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to create payment link');
+                }
+
+                const data = await response.json();
+                
+                // Save link locally
+                const link = {
+                    id: Date.now().toString(),
+                    title: title,
+                    description: description,
+                    amount: amount,
+                    currency: currency,
+                    recurring: recurring,
+                    url: data.url,
+                    stripeId: data.id,
+                    active: true,
+                    createdAt: new Date().toISOString()
+                };
+                
+                paymentLinks.push(link);
+                saveToLocalStorage();
+                
+                // Show link created screen
+                document.getElementById('created-link-url').value = data.url;
+                currentLinkId = link.id;
+                showScreen('screen-link-created');
+                
+                // Clear form
+                document.getElementById('link-title').value = '';
+                document.getElementById('link-description').value = '';
+                document.getElementById('link-amount').value = '';
+                document.getElementById('link-recurring').checked = false;
+                
+            } catch (error) {
+                console.error('Payment link creation error:', error);
+                alert('Failed to create payment link: ' + error.message);
+            }
+        }
+
+        function copyLink() {
+            const linkUrl = document.getElementById('created-link-url').value;
+            navigator.clipboard.writeText(linkUrl).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+
+        function copyLinkById(linkId) {
+            const link = paymentLinks.find(l => l.id === linkId);
+            if (link) {
+                navigator.clipboard.writeText(link.url).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            }
+        }
+
+        function shareLink(method) {
+            const linkUrl = document.getElementById('created-link-url').value;
+            const title = document.getElementById('link-title').value || 'Payment';
+            
+            let shareUrl = '';
+            
+            switch(method) {
+                case 'email':
+                    shareUrl = `mailto:?subject=Payment Request: ${title}&body=Please complete your payment using this link: ${linkUrl}`;
+                    break;
+                case 'sms':
+                    shareUrl = `sms:?body=Please complete your payment: ${linkUrl}`;
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=Please complete your payment: ${linkUrl}`;
+                    break;
+            }
+            
+            window.open(shareUrl, '_blank');
         }
 
         function toggleMobileMenu() {
@@ -729,480 +661,16 @@
         function showScreen(screenId) {
             // Hide all main screens
             document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('screen-onboarding').classList.add('hidden');
             document.getElementById('screen-dashboard').classList.add('hidden');
-            document.getElementById('pos-container').classList.add('hidden');
+            document.getElementById('screen-create-link').classList.add('hidden');
+            document.getElementById('screen-link-created').classList.add('hidden');
             
             // Show requested screen
-            if (screenId === 'screen-amount' || screenId === 'screen-fee' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-card' || screenId === 'screen-complete') {
-                document.getElementById('pos-container').classList.remove('hidden');
-                // Hide all POS screens
-                document.getElementById('screen-amount').classList.add('hidden');
-                document.getElementById('screen-fee').classList.add('hidden');
-                document.getElementById('screen-customer').classList.add('hidden');
-                document.getElementById('screen-tap').classList.add('hidden');
-                document.getElementById('screen-card').classList.add('hidden');
-                document.getElementById('screen-complete').classList.add('hidden');
-                document.getElementById(screenId).classList.remove('hidden');
-                
-                // Start NFC when entering tap screen
-                if (screenId === 'screen-tap') {
-                    startNFCS();
-                } else {
-                    stopNFC();
-                }
-                
-                // Initialize Stripe Elements when entering card screen
-                if (screenId === 'screen-card') {
-                    initializeStripeElements();
-                }
-            } else {
-                document.getElementById(screenId).classList.remove('hidden');
-            }
-        }
-
-        // Amount Keypad Functions
-        function updateDisplay() {
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            document.getElementById('amount-display').textContent = currencySymbol + currentAmount.toFixed(2);
-            document.getElementById('continue-btn').disabled = currentAmount === 0;
-        }
-
-        function pressKey(digit) {
-            const amountStr = currentAmount.toFixed(2).replace('.', '');
-            const newAmountStr = amountStr + digit;
-            currentAmount = parseFloat(newAmountStr) / 100;
-            updateDisplay();
-        }
-
-        function addAmount(value) {
-            currentAmount += value;
-            updateDisplay();
-        }
-
-        function clearAmount() {
-            currentAmount = 0;
-            updateDisplay();
-        }
-
-        function deleteDigit() {
-            const amountStr = currentAmount.toFixed(2).replace('.', '');
-            if (amountStr.length > 1) {
-                const newAmountStr = amountStr.slice(0, -1);
-                currentAmount = parseFloat(newAmountStr) / 100;
-            } else {
-                currentAmount = 0;
-            }
-            updateDisplay();
-        }
-
-        // Fee Selection Functions
-        function selectFeeMode(mode) {
-            feeMode = mode;
-            networkFee = (currentAmount * 0.012) + 0.10;
-            
-            if (mode === 'pass') {
-                customerCharge = currentAmount + networkFee;
-                merchantNet = currentAmount;
-            } else {
-                customerCharge = currentAmount;
-                merchantNet = currentAmount - networkFee;
-            }
-
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            document.getElementById('customer-charge').textContent = currencySymbol + customerCharge.toFixed(2);
-            document.getElementById('merchant-net').textContent = currencySymbol + merchantNet.toFixed(2);
-            
-            // Update customer view
-            document.getElementById('customer-view-amount').textContent = currencySymbol + customerCharge.toFixed(2);
-            document.getElementById('customer-view-fee').textContent = currencySymbol + networkFee.toFixed(2);
-            
-            showScreen('screen-customer');
-        }
-
-        // Stripe Functions
-        function initializeStripeElements() {
-            if (!stripe) {
-                document.getElementById('card-element').innerHTML = '<p class="text-gray-500 text-center">Stripe not configured</p>';
-                return;
-            }
-
-            const elements = stripe.elements({
-                appearance: {
-                    theme: 'stripe'
-                }
-            });
-
-            cardElement = elements.create('card', {
-                style: {
-                    base: {
-                        fontSize: '16px',
-                        color: '#32325d',
-                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                        '::placeholder': {
-                            color: '#aab7c4'
-                        }
-                    }
-                }
-            });
-
-            cardElement.mount('#card-element');
-            cardElement.on('change', function(event) {
-                const displayError = document.getElementById('card-errors');
-                if (event.error) {
-                    displayError.textContent = event.error.message;
-                } else {
-                    displayError.textContent = '';
-                }
-            });
-
-            // Update card amount display
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            document.getElementById('card-amount').textContent = currencySymbol + customerCharge.toFixed(2);
-        }
-
-        async function processCardPayment() {
-            if (!stripe || !cardElement) {
-                alert('Stripe not configured. Please add your Stripe publishable key.');
-                return;
-            }
-
-            const cardPayBtn = document.getElementById('card-pay-btn');
-            cardPayBtn.disabled = true;
-            cardPayBtn.textContent = 'Processing...';
-
-            try {
-                // Create payment intent - This normally requires a backend server
-                // For demo purposes, we'll simulate this
-                const paymentIntent = await createPaymentIntent();
-                
-                // Confirm card payment
-                const { error, paymentIntent: confirmedIntent } = await stripe.confirmCardPayment(
-                    paymentIntent.clientSecret,
-                    {
-                        payment_method: {
-                            card: cardElement
-                        }
-                    }
-                );
-
-                if (error) {
-                    document.getElementById('card-errors').textContent = error.message;
-                    cardPayBtn.disabled = false;
-                    cardPayBtn.textContent = 'Pay Now';
-                } else {
-                    // Payment successful
-                    processPayment();
-                }
-            } catch (error) {
-                console.error('Payment error:', error);
-                document.getElementById('card-errors').textContent = 'Payment failed: ' + error.message;
-                cardPayBtn.disabled = false;
-                cardPayBtn.textContent = 'Pay Now';
-            }
-        }
-
-        async function createPaymentIntent() {
-            // Call Supabase Edge Function to create payment intent
-            const currency = userSettings?.currency?.toLowerCase() || 'gbp';
-            
-            try {
-                const response = await fetch(
-                    `${SUPABASE_URL}/functions/v1/create-payment-intent`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            amount: Math.round(customerCharge * 100),
-                            currency: currency
-                        })
-                    }
-                );
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to create payment intent');
-                }
-
-                return await response.json();
-            } catch (error) {
-                console.error('Payment intent creation error:', error);
-                throw error;
-            }
-        }
-
-        // NFC Functions
-        let nfcReader = null;
-
-        async function startNFCS() {
-            if (!('NDEFReader' in window)) {
-                document.getElementById('nfc-status').textContent = 'NFC not supported on this device';
-                document.getElementById('manual-pay-btn').classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const ndef = new NDEFReader();
-                await ndef.scan();
-                document.getElementById('nfc-status').textContent = 'NFC scanning active...';
-                
-                ndef.addEventListener('reading', (event) => {
-                    const message = event.serialNumber || 'Card detected';
-                    document.getElementById('tap-status').textContent = 'Card Detected!';
-                    document.getElementById('tap-message').textContent = 'Processing payment...';
-                    document.getElementById('nfc-status').textContent = 'Card: ' + message;
-                    
-                    // Simulate payment processing delay
-                    setTimeout(() => {
-                        processPayment();
-                    }, 1500);
-                });
-            } catch (error) {
-                console.error('NFC error:', error);
-                document.getElementById('nfc-status').textContent = 'NFC error: ' + error.message;
-                document.getElementById('manual-pay-btn').classList.remove('hidden');
-            }
-        }
-
-        function stopNFC() {
-            if (nfcReader) {
-                // Web NFC doesn't have a direct stop method, but we can ignore events
-                nfcReader = null;
-            }
-        }
-
-        // Payment Processing
-        function processPayment() {
-            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
-            
-            // Save transaction
-            const transaction = {
-                id: Date.now(),
-                amount: currentAmount,
-                fee: networkFee,
-                feeMode: feeMode,
-                customerCharge: customerCharge,
-                merchantNet: merchantNet,
-                date: new Date().toISOString()
-            };
-            
-            transactions.push(transaction);
-            saveToLocalStorage();
-
-            // Also save to Supabase if configured
-            saveTransactionToSupabase(transaction);
-
-            document.getElementById('receipt-amount').textContent = currencySymbol + currentAmount.toFixed(2);
-            document.getElementById('receipt-fee').textContent = currencySymbol + networkFee.toFixed(2);
-            document.getElementById('receipt-payout').textContent = currencySymbol + merchantNet.toFixed(2);
-            
-            showScreen('screen-complete');
-        }
-
-        // Supabase Functions
-        async function saveTransactionToSupabase(transaction) {
-            if (!SupabaseClient) return;
-            
-            try {
-                const { data, error } = await SupabaseClient
-                    .from('transactions')
-                    .insert([{
-                        user_id: currentUser?.id,
-                        amount: transaction.amount,
-                        fee: transaction.fee,
-                        fee_mode: transaction.feeMode,
-                        customer_charge: transaction.customerCharge,
-                        merchant_net: transaction.merchantNet,
-                        created_at: transaction.date
-                    }]);
-                
-                if (error) {
-                    console.error('Supabase error:', error);
-                }
-            } catch (e) {
-                console.error('Supabase save error:', e);
-            }
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            if (!email || !password) {
-                alert('Please enter email and password');
-                return;
-            }
-
-            if (SupabaseClient) {
-                try {
-                    const { data, error } = await SupabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    currentUser = data.user;
-                    localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
-                    
-                    // Load user settings from Supabase
-                    await loadUserSettings();
-                    
-                    if (!userSettings || !userSettings.onboardingComplete) {
-                        showScreen('screen-onboarding');
-                    } else {
-                        showScreen('screen-dashboard');
-                        updateDashboard();
-                    }
-                } catch (error) {
-                    alert('Login failed: ' + error.message);
-                }
-            } else {
-                // Demo mode
-                currentUser = { email: email, id: 'demo-user' };
-                localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
-                
-                if (!userSettings || !userSettings.onboardingComplete) {
-                    showScreen('screen-onboarding');
-                } else {
-                    showScreen('screen-dashboard');
-                    updateDashboard();
-                }
-            }
-        }
-
-        async function handleSignup() {
-            const business = document.getElementById('signup-business').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            
-            if (!business || !email || !password) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            if (SupabaseClient) {
-                try {
-                    const { data, error } = await SupabaseClient.auth.signUp({
-                        email: email,
-                        password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    currentUser = data.user;
-                    localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
-                    
-                    showScreen('screen-onboarding');
-                } catch (error) {
-                    alert('Signup failed: ' + error.message);
-                }
-            } else {
-                // Demo mode
-                currentUser = { email: email, id: 'demo-user', business: business };
-                localStorage.setItem('rabbit_session', JSON.stringify(currentUser));
-                
-                showScreen('screen-onboarding');
-            }
-        }
-
-        async function loadUserSettings() {
-            if (!SupabaseClient || !currentUser) return;
-            
-            try {
-                const { data, error } = await SupabaseClient
-                    .from('user_settings')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (data && !error) {
-                    userSettings = data;
-                    saveToLocalStorage();
-                }
-            } catch (e) {
-                console.error('Error loading settings:', e);
-            }
-        }
-
-        async function completeOnboarding() {
-            const businessType = document.getElementById('onboarding-type').value;
-            const currency = document.getElementById('onboarding-currency').value;
-            const feeOption = document.getElementById('onboarding-fee').value;
-
-            userSettings = {
-                user_id: currentUser?.id,
-                businessType: businessType,
-                currency: currency,
-                defaultFeeOption: feeOption,
-                onboardingComplete: true
-            };
-            
-            saveToLocalStorage();
-            
-            if (SupabaseClient) {
-                try {
-                    const { error } = await SupabaseClient
-                        .from('user_settings')
-                        .upsert([userSettings]);
-                    
-                    if (error) console.error('Error saving settings:', error);
-                } catch (e) {
-                    console.error('Error saving settings:', e);
-                }
-            }
-            
-            showScreen('screen-dashboard');
-            updateDashboard();
-        }
-
-        // Receipt Functions
-        function showQRReceipt() {
-            document.getElementById('qr-modal').classList.remove('hidden');
-        }
-
-        function hideQRModal() {
-            document.getElementById('qr-modal').classList.add('hidden');
-        }
-
-        // Donation Functions
-        function addDonation(amount) {
-            window.open('https://donate.stripe.com/00wcN5cKpfD77KmeJz00000', '_blank');
-        }
-
-        function skipDonation() {
-            // Do nothing, just close the callout visually
-        }
-
-        // Reset
-        function returnToDashboard() {
-            currentAmount = 0;
-            feeMode = '';
-            networkFee = 0;
-            customerCharge = 0;
-            merchantNet = 0;
-            document.getElementById('receipt-input').value = '';
-            updateDisplay();
-            showScreen('screen-dashboard');
-            updateDashboard();
-        }
-
-        function startNewSale() {
-            currentAmount = 0;
-            feeMode = '';
-            networkFee = 0;
-            customerCharge = 0;
-            merchantNet = 0;
-            document.getElementById('receipt-input').value = '';
-            updateDisplay();
-            showScreen('screen-amount');
+            document.getElementById(screenId).classList.remove('hidden');
         }
 
         // Initialize
-        updateDisplay();
+        updateDashboard();
     </script>
 </body>
 </html>
