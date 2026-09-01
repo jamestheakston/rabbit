@@ -6,6 +6,7 @@
     <title>Rabbit - 0% Fee Web POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -403,8 +404,46 @@
                 </div>
             </div>
 
-            <button onclick="processPayment()" id="manual-pay-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
-                <i class="fas fa-credit-card mr-2"></i>Process Payment Manually
+            <div class="space-y-3">
+                <button onclick="showScreen('screen-card')" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                    <i class="fas fa-credit-card mr-2"></i>Pay with Card
+                </button>
+                <button onclick="processPayment()" id="manual-pay-btn" class="w-full bg-gray-200 hover:bg-gray-300 p-4 rounded-xl font-semibold text-lg transition text-rabbit-dark">
+                    <i class="fas fa-hand-pointer mr-2"></i>Process Manually
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 5: Card Payment -->
+        <div id="screen-card" class="hidden flex-1 flex flex-col p-4">
+            <div class="flex-1 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2">Card Payment</h2>
+                <p class="text-gray-500 text-sm mb-6">Enter card details to complete payment</p>
+
+                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-500">Amount</span>
+                        <span class="text-2xl font-bold text-rabbit-orange" id="card-amount">£0.00</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 w-full mb-4 shadow-sm border border-gray-200">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Details</label>
+                    <div id="card-element" class="p-3 border border-gray-200 rounded-lg bg-gray-50"></div>
+                    <div id="card-errors" class="text-red-500 text-sm mt-2"></div>
+                </div>
+
+                <div class="text-xs text-gray-400 text-center mb-4">
+                    <i class="fas fa-lock mr-1"></i>
+                    Secured by Stripe
+                </div>
+            </div>
+
+            <button onclick="processCardPayment()" id="card-pay-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                <i class="fas fa-lock mr-2"></i>Pay Now
+            </button>
+            <button onclick="showScreen('screen-tap')" class="w-full bg-gray-200 hover:bg-gray-300 p-3 rounded-xl font-semibold text-sm transition text-rabbit-dark mt-3">
+                Back
             </button>
         </div>
 
@@ -492,12 +531,24 @@
         const SUPABASE_URL = 'https://kiirewgajdcagrkjznzd.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_N26VX9GlFsTK_ECpS-FTWw_0K1VWxPi';
         
+        // Stripe Configuration - REPLACE WITH YOUR STRIPE PUBLISHABLE KEY
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_STRIPE_KEY_HERE';
+        
         // Initialize Supabase
         let SupabaseClient;
         try {
             SupabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) {
             console.log('Supabase not configured - running in demo mode');
+        }
+
+        // Initialize Stripe
+        let stripe;
+        let cardElement;
+        try {
+            stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        } catch (e) {
+            console.log('Stripe not configured - running in demo mode');
         }
 
         // State
@@ -683,13 +734,14 @@
             document.getElementById('pos-container').classList.add('hidden');
             
             // Show requested screen
-            if (screenId === 'screen-amount' || screenId === 'screen-fee' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-complete') {
+            if (screenId === 'screen-amount' || screenId === 'screen-fee' || screenId === 'screen-customer' || screenId === 'screen-tap' || screenId === 'screen-card' || screenId === 'screen-complete') {
                 document.getElementById('pos-container').classList.remove('hidden');
                 // Hide all POS screens
                 document.getElementById('screen-amount').classList.add('hidden');
                 document.getElementById('screen-fee').classList.add('hidden');
                 document.getElementById('screen-customer').classList.add('hidden');
                 document.getElementById('screen-tap').classList.add('hidden');
+                document.getElementById('screen-card').classList.add('hidden');
                 document.getElementById('screen-complete').classList.add('hidden');
                 document.getElementById(screenId).classList.remove('hidden');
                 
@@ -698,6 +750,11 @@
                     startNFCS();
                 } else {
                     stopNFC();
+                }
+                
+                // Initialize Stripe Elements when entering card screen
+                if (screenId === 'screen-card') {
+                    initializeStripeElements();
                 }
             } else {
                 document.getElementById(screenId).classList.remove('hidden');
@@ -761,6 +818,111 @@
             document.getElementById('customer-view-fee').textContent = currencySymbol + networkFee.toFixed(2);
             
             showScreen('screen-customer');
+        }
+
+        // Stripe Functions
+        function initializeStripeElements() {
+            if (!stripe) {
+                document.getElementById('card-element').innerHTML = '<p class="text-gray-500 text-center">Stripe not configured</p>';
+                return;
+            }
+
+            const elements = stripe.elements({
+                appearance: {
+                    theme: 'stripe'
+                }
+            });
+
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                        '::placeholder': {
+                            color: '#aab7c4'
+                        }
+                    }
+                }
+            });
+
+            cardElement.mount('#card-element');
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            // Update card amount display
+            const currencySymbol = userSettings?.currency === 'EUR' ? '€' : userSettings?.currency === 'USD' ? '$' : '£';
+            document.getElementById('card-amount').textContent = currencySymbol + customerCharge.toFixed(2);
+        }
+
+        async function processCardPayment() {
+            if (!stripe || !cardElement) {
+                alert('Stripe not configured. Please add your Stripe publishable key.');
+                return;
+            }
+
+            const cardPayBtn = document.getElementById('card-pay-btn');
+            cardPayBtn.disabled = true;
+            cardPayBtn.textContent = 'Processing...';
+
+            try {
+                // Create payment intent - This normally requires a backend server
+                // For demo purposes, we'll simulate this
+                const paymentIntent = await createPaymentIntent();
+                
+                // Confirm card payment
+                const { error, paymentIntent: confirmedIntent } = await stripe.confirmCardPayment(
+                    paymentIntent.clientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement
+                        }
+                    }
+                );
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    cardPayBtn.disabled = false;
+                    cardPayBtn.textContent = 'Pay Now';
+                } else {
+                    // Payment successful
+                    processPayment();
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                document.getElementById('card-errors').textContent = 'Payment failed: ' + error.message;
+                cardPayBtn.disabled = false;
+                cardPayBtn.textContent = 'Pay Now';
+            }
+        }
+
+        async function createPaymentIntent() {
+            // NOTE: This function requires a backend server to be secure
+            // For production, you should create a payment intent on your server
+            // This is a simplified version for demonstration
+            
+            // Simulated response - in production, call your backend:
+            // const response = await fetch('/create-payment-intent', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ amount: Math.round(customerCharge * 100), currency: 'gbp' })
+            // });
+            // return await response.json();
+            
+            // For demo, return a mock client secret
+            // In production, this would come from your Stripe backend
+            alert('For actual payments, you need a backend server to create payment intents securely. This demo shows the UI flow.');
+            
+            // Simulate successful payment for demo
+            return {
+                clientSecret: 'pi_mock_secret_' + Date.now()
+            };
         }
 
         // NFC Functions
