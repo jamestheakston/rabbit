@@ -26,11 +26,16 @@ DROP POLICY IF EXISTS "Users can view their own payment links" ON payment_links;
 DROP POLICY IF EXISTS "Users can insert their own payment links" ON payment_links;
 DROP POLICY IF EXISTS "Users can update their own payment links" ON payment_links;
 DROP POLICY IF EXISTS "Users can delete their own payment links" ON payment_links;
+DROP POLICY IF EXISTS "Public can view active payment links by ID" ON payment_links;
 
 -- Create policies
 CREATE POLICY "Users can view their own payment links"
     ON payment_links FOR SELECT
     USING (auth.uid() = user_id);
+
+CREATE POLICY "Public can view active payment links by ID"
+    ON payment_links FOR SELECT
+    USING (active = true);
 
 CREATE POLICY "Users can insert their own payment links"
     ON payment_links FOR INSERT
