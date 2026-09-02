@@ -277,7 +277,7 @@
                 paymentRequest.on('paymentmethod', async (event) => {
                     // Confirm the payment
                     const { error, paymentIntent } = await stripe.confirmCardPayment(
-                        paymentData.clientSecret,
+                        paymentData.client_secret,
                         {
                             payment_method: event.paymentMethod.id,
                         },
@@ -289,7 +289,7 @@
                         showError(error.message);
                     } else {
                         if (paymentIntent.status === 'requires_action') {
-                            stripe.confirmCardPayment(paymentData.clientSecret).then(function(result) {
+                            stripe.confirmCardPayment(paymentData.client_secret).then(function(result) {
                                 if (result.error) {
                                     event.complete('fail');
                                     showError(result.error.message);
@@ -324,7 +324,7 @@
 
             try {
                 const { error, paymentIntent } = await stripe.confirmCardPayment(
-                    paymentData.clientSecret,
+                    paymentData.client_secret,
                     {
                         payment_method: {
                             card: cardElement
