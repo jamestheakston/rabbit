@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Rabbit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rabbit: {
+                            orange: '#FF6B35',
+                            bg: '#f5f4f0',
+                            dark: '#1a1a2e',
+                            darker: '#16162a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-rabbit-bg text-rabbit-dark min-h-screen">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="logo.jpg" alt="Rabbit Logo" class="h-16 w-16 rounded-2xl mx-auto mb-4 object-cover shadow-lg">
+                <h1 class="text-2xl font-bold mb-2">Complete Payment</h1>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-rabbit-orange mx-auto mb-4"></div>
+                <p class="text-gray-500">Loading payment details...</p>
+            </div>
+
+            <!-- Payment Form -->
+            <div id="payment-form" class="hidden bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                <div class="mb-6">
+                    <h2 id="payment-title" class="text-xl font-bold mb-2">Payment</h2>
+                    <p id="payment-description" class="text-gray-500 text-sm"></p>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Amount</span>
+                        <span id="payment-amount" class="text-2xl font-bold text-rabbit-orange">£0.00</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Details</label>
+                    <div id="card-element" class="p-3 border border-gray-200 rounded-lg bg-gray-50"></div>
+                    <div id="card-errors" class="text-red-500 text-sm mt-2"></div>
+                </div>
+
+                <button onclick="processPayment()" id="pay-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 p-4 rounded-xl font-semibold text-lg transition text-white">
+                    <i class="fas fa-lock mr-2"></i>Pay Now
+                </button>
+
+                <p class="text-xs text-gray-400 text-center mt-4">
+                    <i class="fas fa-lock mr-1"></i>
+                    Secured by Stripe
+                </p>
+            </div>
+
+            <!-- Success State -->
+            <div id="success" class="hidden bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Payment Complete</h2>
+                <p class="text-gray-500 mb-6">Thank you for your payment!</p>
+                <p class="text-sm text-gray-400">You can close this window.</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="hidden bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-times text-red-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Payment Failed</h2>
+                <p id="error-message" class="text-gray-500 mb-6">Something went wrong.</p>
+                <button onclick="location.reload()" class="bg-rabbit-orange hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition">
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51U7YZRIgHrqGQ08gbdu7U7Q4sFTSliP3HjOvRbE8kWAuQ5rXfe4FUnqdB6y6E67KybV4eA8CdrA0tKBOTqPmvW1l00FUNaZ5GC';
+        let stripe;
+        let cardElement;
+        let paymentData = null;
+
+        // Get payment ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('id');
+
+        if (!paymentId) {
+            showError('Invalid payment link');
+        } else {
+            loadPaymentDetails(paymentId);
+        }
+
+        function loadPaymentDetails(id) {
+            // Load from localStorage (in production, this would be from Supabase)
+            const savedLinks = localStorage.getItem('rabbit_payment_links');
+            if (savedLinks) {
+                const links = JSON.parse(savedLinks);
+                paymentData = links.find(l => l.id === id);
+            }
+
+            if (!paymentData) {
+                showError('Payment not found or expired');
+                return;
+            }
+
+            // Show payment form
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('payment-form').classList.remove('hidden');
+
+            // Update UI
+            document.getElementById('payment-title').textContent = paymentData.title;
+            document.getElementById('payment-description').textContent = paymentData.description || '';
+            const currencySymbol = paymentData.currency === 'eur' ? '€' : paymentData.currency === 'usd' ? '$' : '£';
+            document.getElementById('payment-amount').textContent = currencySymbol + paymentData.amount.toFixed(2);
+
+            // Initialize Stripe
+            initializeStripe();
+        }
+
+        function initializeStripe() {
+            try {
+                stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                const elements = stripe.elements({
+                    appearance: {
+                        theme: 'stripe'
+                    }
+                });
+
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#32325d',
+                            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                            '::placeholder': {
+                                color: '#aab7c4'
+                            }
+                        }
+                    }
+                });
+
+                cardElement.mount('#card-element');
+                cardElement.on('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            } catch (e) {
+                console.error('Stripe initialization error:', e);
+                showError('Payment system unavailable');
+            }
+        }
+
+        async function processPayment() {
+            if (!stripe || !cardElement || !paymentData) {
+                showError('Payment system unavailable');
+                return;
+            }
+
+            const payBtn = document.getElementById('pay-btn');
+            payBtn.disabled = true;
+            payBtn.textContent = 'Processing...';
+
+            try {
+                const { error, paymentIntent } = await stripe.confirmCardPayment(
+                    paymentData.clientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement
+                        }
+                    }
+                );
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    payBtn.disabled = false;
+                    payBtn.textContent = 'Pay Now';
+                } else {
+                    // Payment successful
+                    document.getElementById('payment-form').classList.add('hidden');
+                    document.getElementById('success').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showError('Payment failed: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('payment-form').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+    </script>
+</body>
+</html>

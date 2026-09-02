@@ -555,7 +555,7 @@
                 return;
             }
 
-            // Create Stripe payment link
+            // Create Stripe payment intent (temporary)
             try {
                 const response = await fetch(
                     `${SUPABASE_URL}/functions/v1/create-payment-link`,
@@ -582,16 +582,20 @@
 
                 const data = await response.json();
                 
+                // Generate temporary payment URL
+                const baseUrl = window.location.origin;
+                const paymentUrl = `${baseUrl}/payment.html?id=${data.paymentId}`;
+                
                 // Save link locally
                 const link = {
-                    id: Date.now().toString(),
+                    id: data.paymentId,
                     title: title,
                     description: description,
                     amount: amount,
                     currency: currency,
                     recurring: recurring,
-                    url: data.url,
-                    stripeId: data.id,
+                    url: paymentUrl,
+                    clientSecret: data.clientSecret,
                     active: true,
                     createdAt: new Date().toISOString()
                 };
@@ -600,7 +604,7 @@
                 saveToLocalStorage();
                 
                 // Show link created screen
-                document.getElementById('created-link-url').value = data.url;
+                document.getElementById('created-link-url').value = paymentUrl;
                 currentLinkId = link.id;
                 showScreen('screen-link-created');
                 
