@@ -188,7 +188,15 @@
                     }
                 });
 
+                const cardElementContainer = document.getElementById('card-element');
+                if (!cardElementContainer) {
+                    console.error('Card element container not found');
+                    showError('Payment form error');
+                    return;
+                }
+
                 cardElement.mount('#card-element');
+                
                 cardElement.on('change', function(event) {
                     const displayError = document.getElementById('card-errors');
                     if (event.error) {
@@ -196,6 +204,18 @@
                     } else {
                         displayError.textContent = '';
                     }
+                });
+
+                cardElement.on('ready', function() {
+                    console.log('Card element is ready');
+                });
+
+                cardElement.on('focus', function() {
+                    console.log('Card element focused');
+                });
+
+                cardElement.on('blur', function() {
+                    console.log('Card element blurred');
                 });
 
                 // Payment Request Button (Apple Pay / Google Pay)
