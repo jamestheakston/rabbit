@@ -132,17 +132,7 @@
         function loadPaymentDetails(id) {
             console.log('Loading payment details for ID:', id);
             
-            // Load from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const title = urlParams.get('title');
-            const description = urlParams.get('description');
-            const amount = parseFloat(urlParams.get('amount'));
-            const currency = urlParams.get('currency');
-            const clientSecret = urlParams.get('clientSecret');
-
-            console.log('URL params:', { title, description, amount, currency, clientSecret });
-
-            // Try to load from Supabase first
+            // Load from Supabase using only the ID
             const SUPABASE_URL = 'https://kiirewgajdcagrkjznzd.supabase.co';
             const SUPABASE_KEY = 'sb_publishable_N26VX9GlFsTK_ECpS-FTWw_0K1VWxPi';
             
@@ -159,18 +149,6 @@
                     paymentData = data[0];
                     console.log('Payment data from Supabase:', paymentData);
                     showPaymentForm();
-                } else if (title && amount && currency && clientSecret) {
-                    // Fallback to URL params
-                    paymentData = {
-                        id: id,
-                        title: title,
-                        description: description || '',
-                        amount: amount,
-                        currency: currency,
-                        client_secret: clientSecret
-                    };
-                    console.log('Payment data from URL fallback:', paymentData);
-                    showPaymentForm();
                 } else {
                     console.error('Payment data not found');
                     showError('Payment not found or expired');
@@ -178,21 +156,7 @@
             })
             .catch(error => {
                 console.error('Error loading from Supabase:', error);
-                // Fallback to URL params
-                if (title && amount && currency && clientSecret) {
-                    paymentData = {
-                        id: id,
-                        title: title,
-                        description: description || '',
-                        amount: amount,
-                        currency: currency,
-                        client_secret: clientSecret
-                    };
-                    console.log('Payment data from URL fallback:', paymentData);
-                    showPaymentForm();
-                } else {
-                    showError('Payment not found or expired');
-                }
+                showError('Payment not found or expired');
             });
         }
 

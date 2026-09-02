@@ -544,7 +544,7 @@
             const currencySymbol = '£';
             const baseUrl = window.location.origin;
             list.innerHTML = paymentLinks.slice(0, 10).map(l => {
-                const paymentUrl = `${baseUrl}/payment.html?id=${l.id}&title=${encodeURIComponent(l.title)}&description=${encodeURIComponent(l.description || '')}&amount=${l.amount}&currency=${l.currency}&clientSecret=${l.client_secret}`;
+                const paymentUrl = `${baseUrl}/payment.html?id=${l.id}`;
                 return `
                 <div class="p-4 flex justify-between items-center">
                     <div>
@@ -604,9 +604,9 @@
 
                 const data = await response.json();
                 
-                // Generate temporary payment URL with data in URL params
+                // Generate clean payment URL with only ID
                 const baseUrl = window.location.origin;
-                const paymentUrl = `${baseUrl}/payment.html?id=${data.paymentId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description || '')}&amount=${amount}&currency=${currency}&clientSecret=${data.clientSecret}`;
+                const paymentUrl = `${baseUrl}/payment.html?id=${data.paymentId}`;
                 
                 // Save link locally
                 const link = {
