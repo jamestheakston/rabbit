@@ -147,10 +147,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Supabase data:', data);
                 if (data && data.length > 0) {
                     paymentData = data[0];
-                    console.log('Payment data from Supabase:', paymentData);
+                    console.log('Payment data loaded successfully');
                     showPaymentForm();
                 } else {
                     console.error('Payment data not found');
