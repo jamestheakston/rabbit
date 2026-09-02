@@ -582,9 +582,9 @@
 
                 const data = await response.json();
                 
-                // Generate temporary payment URL
+                // Generate temporary payment URL with data in URL params
                 const baseUrl = window.location.origin;
-                const paymentUrl = `${baseUrl}/payment.html?id=${data.paymentId}`;
+                const paymentUrl = `${baseUrl}/payment.html?id=${data.paymentId}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description || '')}&amount=${amount}&currency=${currency}&clientSecret=${data.clientSecret}`;
                 
                 // Save link locally
                 const link = {

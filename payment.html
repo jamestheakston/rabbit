@@ -130,17 +130,34 @@
         }
 
         function loadPaymentDetails(id) {
-            // Load from localStorage (in production, this would be from Supabase)
-            const savedLinks = localStorage.getItem('rabbit_payment_links');
-            if (savedLinks) {
-                const links = JSON.parse(savedLinks);
-                paymentData = links.find(l => l.id === id);
-            }
+            console.log('Loading payment details for ID:', id);
+            
+            // Load from URL parameters instead of localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const title = urlParams.get('title');
+            const description = urlParams.get('description');
+            const amount = parseFloat(urlParams.get('amount'));
+            const currency = urlParams.get('currency');
+            const clientSecret = urlParams.get('clientSecret');
 
-            if (!paymentData) {
+            console.log('URL params:', { title, description, amount, currency, clientSecret });
+
+            if (!title || !amount || !currency || !clientSecret) {
+                console.error('Missing required payment data');
                 showError('Payment not found or expired');
                 return;
             }
+
+            paymentData = {
+                id: id,
+                title: title,
+                description: description || '',
+                amount: amount,
+                currency: currency,
+                clientSecret: clientSecret
+            };
+
+            console.log('Payment data from URL:', paymentData);
 
             // Show payment form
             document.getElementById('loading').classList.add('hidden');
@@ -152,6 +169,7 @@
             const currencySymbol = paymentData.currency === 'eur' ? '€' : paymentData.currency === 'usd' ? '$' : '£';
             document.getElementById('payment-amount').textContent = currencySymbol + paymentData.amount.toFixed(2);
 
+            console.log('UI updated, initializing Stripe...');
             // Initialize Stripe
             initializeStripe();
         }
