@@ -12,6 +12,22 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .StripeElement {
+            box-sizing: border-box;
+            height: 40px;
+            padding: 10px 12px;
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: white;
+        }
+        .StripeElement--focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+        }
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -59,7 +75,7 @@
                 <!-- Card Input -->
                 <div class="space-y-3">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Card details</label>
-                    <div id="card-element" class="border border-slate-300 rounded-md p-3"></div>
+                    <div id="card-element"></div>
                     <div id="card-errors" class="text-red-500 text-sm"></div>
                 </div>
 
@@ -207,6 +223,10 @@
                 cardElement.mount('#card-element');
                 console.log('Card element mounted successfully');
                 
+                cardElement.on('ready', function() {
+                    console.log('Card element is ready for input');
+                });
+                
                 cardElement.on('change', function(event) {
                     const displayError = document.getElementById('card-errors');
                     if (event.error) {
@@ -214,18 +234,6 @@
                     } else {
                         displayError.textContent = '';
                     }
-                });
-
-                cardElement.on('ready', function() {
-                    console.log('Card element is ready');
-                });
-
-                cardElement.on('focus', function() {
-                    console.log('Card element focused');
-                });
-
-                cardElement.on('blur', function() {
-                    console.log('Card element blurred');
                 });
 
                 // Payment Request Button (Apple Pay / Google Pay)
