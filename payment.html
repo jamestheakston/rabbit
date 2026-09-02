@@ -50,16 +50,14 @@
             <!-- Right Column: Interactive Form -->
             <div id="payment-form" class="hidden space-y-6">
                 <!-- Express Payment Grid -->
-                <div class="grid grid-cols-3 gap-2">
-                    <button class="h-10 bg-black text-white font-medium rounded-md flex items-center justify-center text-sm">
+                <div id="payment-request-button-container" class="mb-6"></div>
+                <div id="express-payment-buttons" class="grid grid-cols-2 gap-2">
+                    <div id="apple-pay-button" class="h-10 bg-black text-white font-medium rounded-md flex items-center justify-center text-sm cursor-pointer">
                         <i class="fab fa-apple mr-2"></i>Apple Pay
-                    </button>
-                    <button class="h-10 bg-emerald-500 text-white font-medium rounded-md flex items-center justify-center text-sm">
-                        Onelink
-                    </button>
-                    <button class="h-10 bg-amber-400 text-slate-900 font-medium rounded-md flex items-center justify-center text-sm">
-                        <i class="fab fa-amazon mr-2"></i>Amazon Pay
-                    </button>
+                    </div>
+                    <div id="google-pay-button" class="h-10 bg-white border border-slate-300 text-slate-900 font-medium rounded-md flex items-center justify-center text-sm cursor-pointer">
+                        <i class="fab fa-google mr-2"></i>Google Pay
+                    </div>
                 </div>
 
                 <!-- Form Inputs -->
@@ -118,6 +116,7 @@
         const STRIPE_PUBLISHABLE_KEY = 'pk_live_51U7YZRIgHrqGQ08gbdu7U7Q4sFTSliP3HjOvRbE8kWAuQ5rXfe4FUnqdB6y6E67KybV4eA8CdrA0tKBOTqPmvW1l00FUNaZ5GC';
         let stripe;
         let cardElement;
+        let paymentRequestButton;
         let paymentData = null;
 
         // Get payment ID from URL
@@ -175,6 +174,7 @@
                     }
                 });
 
+                // Card Element
                 cardElement = elements.create('card', {
                     style: {
                         base: {
@@ -195,6 +195,74 @@
                         displayError.textContent = event.error.message;
                     } else {
                         displayError.textContent = '';
+                    }
+                });
+
+                // Payment Request Button (Apple Pay / Google Pay)
+                const paymentRequest = stripe.paymentRequest({
+                    country: 'GB',
+                    currency: paymentData.currency.toLowerCase(),
+                    total: {
+                        label: paymentData.title,
+                        amount: Math.round(paymentData.amount * 100),
+                    },
+                    requestPayerName: true,
+                    requestPayerEmail: true,
+                });
+
+                paymentRequestButton = elements.create('paymentRequestButton', {
+                    paymentRequest: paymentRequest,
+                    style: {
+                        paymentRequestButton: {
+                            type: 'default',
+                            theme: 'dark',
+                        }
+                    }
+                });
+
+                // Check if payment request is available
+                paymentRequest.canMakePayment().then(result => {
+                    if (result) {
+                        // Show the payment request button
+                        document.getElementById('apple-pay-button').style.display = 'none';
+                        document.getElementById('google-pay-button').style.display = 'none';
+                        paymentRequestButton.mount('#payment-request-button-container');
+                    } else {
+                        // Hide the container if not available
+                        document.getElementById('payment-request-button-container').style.display = 'none';
+                    }
+                });
+
+                paymentRequest.on('paymentmethod', async (event) => {
+                    // Confirm the payment
+                    const { error, paymentIntent } = await stripe.confirmCardPayment(
+                        paymentData.clientSecret,
+                        {
+                            payment_method: event.paymentMethod.id,
+                        },
+                        { handleActions: false }
+                    );
+
+                    if (error) {
+                        event.complete('fail');
+                        showError(error.message);
+                    } else {
+                        if (paymentIntent.status === 'requires_action') {
+                            stripe.confirmCardPayment(paymentData.clientSecret).then(function(result) {
+                                if (result.error) {
+                                    event.complete('fail');
+                                    showError(result.error.message);
+                                } else {
+                                    event.complete('success');
+                                    document.getElementById('payment-form').classList.add('hidden');
+                                    document.getElementById('success').classList.remove('hidden');
+                                }
+                            });
+                        } else {
+                            event.complete('success');
+                            document.getElementById('payment-form').classList.add('hidden');
+                            document.getElementById('success').classList.remove('hidden');
+                        }
                     }
                 });
             } catch (e) {
