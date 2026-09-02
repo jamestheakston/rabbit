@@ -13,83 +13,101 @@
             font-family: 'Inter', sans-serif;
         }
         .stripe-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px 12px;
             background: #fff;
+            height: 40px;
         }
         .stripe-card:focus-within {
-            border-color: #635bff;
-            box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+            border-color: #0284c7;
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-white rounded-lg shadow-sm">
-            <!-- Header -->
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center gap-3 mb-4">
-                    <img src="logo.jpg" alt="Rabbit Logo" class="h-10 w-10 rounded-lg object-cover">
-                    <div>
-                        <h1 class="text-lg font-semibold text-gray-900">Rabbit</h1>
-                        <p class="text-sm text-gray-500">Payment</p>
+<body class="bg-slate-50 min-h-screen">
+    <div class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+        <!-- Split Layout Container -->
+        <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
+            
+            <!-- Left Column: Context / Summary -->
+            <div class="flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="logo.jpg" alt="Rabbit Logo" class="h-10 w-10 rounded-lg object-cover">
+                        <h1 class="text-sm font-medium text-slate-700">Rabbit</h1>
                     </div>
+                    <h2 id="payment-title" class="text-xl font-semibold text-slate-900">Payment</h2>
+                    <p id="payment-description" class="text-sm text-slate-500 leading-relaxed"></p>
+                </div>
+                
+                <!-- Amount Container -->
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <span id="payment-amount" class="text-3xl font-bold text-slate-900">£0.00</span>
                 </div>
             </div>
 
-            <!-- Loading State -->
-            <div id="loading" class="p-8 text-center">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300 mx-auto mb-4"></div>
-                <p class="text-gray-500 text-sm">Loading...</p>
-            </div>
-
-            <!-- Payment Form -->
-            <div id="payment-form" class="hidden p-6">
-                <div class="mb-6">
-                    <h2 id="payment-title" class="text-lg font-semibold text-gray-900 mb-1">Payment</h2>
-                    <p id="payment-description" class="text-sm text-gray-500"></p>
+            <!-- Right Column: Interactive Form -->
+            <div id="payment-form" class="hidden space-y-6">
+                <!-- Express Payment Grid -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button class="h-10 bg-black text-white font-medium rounded-md flex items-center justify-center text-sm">
+                        <i class="fab fa-apple mr-2"></i>Apple Pay
+                    </button>
+                    <button class="h-10 bg-emerald-500 text-white font-medium rounded-md flex items-center justify-center text-sm">
+                        Onelink
+                    </button>
+                    <button class="h-10 bg-amber-400 text-slate-900 font-medium rounded-md flex items-center justify-center text-sm">
+                        <i class="fab fa-amazon mr-2"></i>Amazon Pay
+                    </button>
                 </div>
 
-                <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600 text-sm">Total</span>
-                        <span id="payment-amount" class="text-2xl font-semibold text-gray-900">£0.00</span>
-                    </div>
+                <!-- Form Inputs -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Contact details</label>
+                    <input type="email" id="email-input" placeholder="email@example.com" class="w-full h-10 px-3 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm" />
                 </div>
 
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Card details</label>
+                <!-- Card Input -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Card details</label>
                     <div id="card-element" class="stripe-card"></div>
-                    <div id="card-errors" class="text-red-500 text-sm mt-2"></div>
+                    <div id="card-errors" class="text-red-500 text-sm"></div>
                 </div>
 
-                <button onclick="processPayment()" id="pay-btn" class="w-full bg-gray-900 hover:bg-gray-800 text-white p-4 rounded-lg font-medium transition">
+                <!-- Submit CTA -->
+                <button onclick="processPayment()" id="pay-btn" class="w-full h-11 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-md shadow-sm transition-colors">
                     Pay
                 </button>
             </div>
 
+            <!-- Loading State -->
+            <div id="loading" class="col-span-1 md:col-span-2 p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-300 mx-auto mb-4"></div>
+                <p class="text-slate-500 text-sm">Loading...</p>
+            </div>
+
             <!-- Success State -->
-            <div id="success" class="hidden p-8 text-center">
+            <div id="success" class="hidden col-span-1 md:col-span-2 p-8 text-center">
                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-2">Payment successful</h2>
-                <p class="text-sm text-gray-500">Thank you for your payment.</p>
+                <h2 class="text-lg font-semibold text-slate-900 mb-2">Payment successful</h2>
+                <p class="text-sm text-slate-500">Thank you for your payment.</p>
             </div>
 
             <!-- Error State -->
-            <div id="error" class="hidden p-8 text-center">
+            <div id="error" class="hidden col-span-1 md:col-span-2 p-8 text-center">
                 <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </div>
-                <h2 class="text-lg font-semibold text-gray-900 mb-2">Payment failed</h2>
-                <p id="error-message" class="text-sm text-gray-500 mb-4">Something went wrong.</p>
-                <button onclick="location.reload()" class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium transition">
+                <h2 class="text-lg font-semibold text-slate-900 mb-2">Payment failed</h2>
+                <p id="error-message" class="text-sm text-slate-500 mb-4">Something went wrong.</p>
+                <button onclick="location.reload()" class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-md font-medium transition-colors">
                     Try again
                 </button>
             </div>
@@ -146,13 +164,13 @@
                     appearance: {
                         theme: 'stripe',
                         variables: {
-                            colorPrimary: '#635bff',
+                            colorPrimary: '#0284c7',
                             colorBackground: '#ffffff',
-                            colorText: '#32325d',
-                            colorDanger: '#df1b41',
+                            colorText: '#334155',
+                            colorDanger: '#ef4444',
                             fontFamily: 'Inter, sans-serif',
                             spacingUnit: '4px',
-                            borderRadius: '8px',
+                            borderRadius: '6px',
                         }
                     }
                 });
@@ -160,11 +178,11 @@
                 cardElement = elements.create('card', {
                     style: {
                         base: {
-                            fontSize: '16px',
-                            color: '#32325d',
+                            fontSize: '14px',
+                            color: '#334155',
                             fontFamily: 'Inter, sans-serif',
                             '::placeholder': {
-                                color: '#aab7c4'
+                                color: '#94a3b8'
                             }
                         }
                     }
