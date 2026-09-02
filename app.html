@@ -301,8 +301,9 @@
                                 <label for="link-recurring" class="text-sm text-gray-700">Make this a recurring payment</label>
                             </div>
 
-                            <button onclick="createPaymentLink()" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition">
-                                Create Payment Link
+                            <button onclick="createPaymentLink()" id="create-link-btn" class="w-full bg-rabbit-orange hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2">
+                                <span id="create-link-text">Create Payment Link</span>
+                                <i id="create-link-spinner" class="fas fa-spinner fa-spin hidden"></i>
                             </button>
                         </div>
                     </div>
@@ -576,6 +577,14 @@
                 return;
             }
 
+            // Show loading spinner
+            const btn = document.getElementById('create-link-btn');
+            const btnText = document.getElementById('create-link-text');
+            const spinner = document.getElementById('create-link-spinner');
+            btn.disabled = true;
+            btnText.textContent = 'Creating...';
+            spinner.classList.remove('hidden');
+
             // Create Stripe payment intent (temporary)
             try {
                 const response = await fetch(
@@ -637,9 +646,18 @@
                 document.getElementById('link-amount').value = '';
                 document.getElementById('link-recurring').checked = false;
                 
+                // Reset button
+                btn.disabled = false;
+                btnText.textContent = 'Create Payment Link';
+                spinner.classList.add('hidden');
+                
             } catch (error) {
                 console.error('Payment link creation error:', error);
                 alert('Failed to create payment link: ' + error.message);
+                // Reset button
+                btn.disabled = false;
+                btnText.textContent = 'Create Payment Link';
+                spinner.classList.add('hidden');
             }
         }
 
