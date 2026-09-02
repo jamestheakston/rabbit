@@ -21,6 +21,12 @@ CREATE INDEX IF NOT EXISTS idx_payment_links_active ON payment_links(active);
 -- Enable Row Level Security
 ALTER TABLE payment_links ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own payment links" ON payment_links;
+DROP POLICY IF EXISTS "Users can insert their own payment links" ON payment_links;
+DROP POLICY IF EXISTS "Users can update their own payment links" ON payment_links;
+DROP POLICY IF EXISTS "Users can delete their own payment links" ON payment_links;
+
 -- Create policies
 CREATE POLICY "Users can view their own payment links"
     ON payment_links FOR SELECT
@@ -46,6 +52,9 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Drop existing trigger if it exists
+DROP TRIGGER IF EXISTS update_payment_links_updated_at ON payment_links;
 
 -- Create trigger to automatically update updated_at
 CREATE TRIGGER update_payment_links_updated_at
