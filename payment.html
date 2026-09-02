@@ -23,6 +23,9 @@
             border-color: #0284c7;
             box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
         }
+        .StripeElement {
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -263,14 +266,22 @@
                 // Check if payment request is available
                 paymentRequest.canMakePayment().then(result => {
                     if (result) {
+                        console.log('Payment request available:', result);
                         // Show the payment request button
-                        document.getElementById('apple-pay-button').style.display = 'none';
-                        document.getElementById('google-pay-button').style.display = 'none';
+                        document.getElementById('payment-request-button-container').style.display = 'block';
+                        document.getElementById('express-payment-buttons').style.display = 'none';
                         paymentRequestButton.mount('#payment-request-button-container');
                     } else {
+                        console.log('Payment request not available');
                         // Hide the container if not available
                         document.getElementById('payment-request-button-container').style.display = 'none';
+                        document.getElementById('express-payment-buttons').style.display = 'block';
                     }
+                }).catch(error => {
+                    console.error('Error checking payment request availability:', error);
+                    // Hide the container and show fallback buttons
+                    document.getElementById('payment-request-button-container').style.display = 'none';
+                    document.getElementById('express-payment-buttons').style.display = 'block';
                 });
 
                 paymentRequest.on('paymentmethod', async (event) => {
