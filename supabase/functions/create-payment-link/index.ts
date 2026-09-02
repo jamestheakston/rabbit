@@ -1,9 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2023-10-16',
 });
+
+const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://kiirewgajdcagrkjznzd.supabase.co';
+const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
 serve(async (req) => {
   // Handle CORS
@@ -19,7 +23,7 @@ serve(async (req) => {
   }
 
   try {
-    const { title, description, amount, currency, recurring } = await req.json();
+    const { title, description, amount, currency, recurring, userId } = await req.json();
     
     // Create Stripe payment intent (temporary, not a permanent payment link)
     const paymentIntent = await stripe.paymentIntents.create({
@@ -34,9 +38,32 @@ serve(async (req) => {
     // Generate a temporary payment ID for the URL
     const paymentId = crypto.randomUUID();
     
+    // Save to Supabase
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data: linkData, error: linkError } = await supabase
+      .from('payment_links')
+      .insert([{
+        user_id: userId,
+        title: title,
+        description: description,
+        amount: amount / 100, // Convert from cents to decimal
+        currency: currency || 'gbp',
+        recurring: recurring,
+        client_secret: paymentIntent.client_secret,
+        stripe_payment_intent_id: paymentIntent.id,
+        active: true
+      }])
+      .select()
+      .single();
+    
+    if (linkError) {
+      console.error('Error saving to Supabase:', linkError);
+      // Continue anyway, return the payment data
+    }
+    
     return new Response(
       JSON.stringify({ 
-        paymentId: paymentId,
+        paymentId: linkData?.id || paymentId,
         clientSecret: paymentIntent.client_secret,
         amount: amount,
         currency: currency || 'gbp',

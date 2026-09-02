@@ -498,7 +498,25 @@
         }
 
         // Dashboard Functions
-        function updateDashboard() {
+        async function updateDashboard() {
+            // Load payment links from Supabase
+            if (SupabaseClient && currentUser) {
+                try {
+                    const { data: linksData, error: linksError } = await SupabaseClient
+                        .from('payment_links')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (linksData && !linksError) {
+                        paymentLinks = linksData;
+                        saveToLocalStorage();
+                    }
+                } catch (e) {
+                    console.error('Error loading payment links:', e);
+                }
+            }
+
             // Calculate stats
             const totalRevenue = transactions.reduce((sum, t) => sum + t.amount, 0);
             const activeLinks = paymentLinks.filter(l => l.active).length;
@@ -524,7 +542,10 @@
             }
 
             const currencySymbol = '£';
-            list.innerHTML = paymentLinks.slice(-10).reverse().map(l => `
+            const baseUrl = window.location.origin;
+            list.innerHTML = paymentLinks.slice(0, 10).map(l => {
+                const paymentUrl = `${baseUrl}/payment.html?id=${l.id}&title=${encodeURIComponent(l.title)}&description=${encodeURIComponent(l.description || '')}&amount=${l.amount}&currency=${l.currency}&clientSecret=${l.client_secret}`;
+                return `
                 <div class="p-4 flex justify-between items-center">
                     <div>
                         <p class="font-semibold">${l.title}</p>
@@ -534,12 +555,12 @@
                         <span class="px-3 py-1 rounded-full text-xs font-semibold ${l.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}">
                             ${l.active ? 'Active' : 'Inactive'}
                         </span>
-                        <button onclick="copyLinkById('${l.id}')" class="text-gray-500 hover:text-rabbit-orange transition">
+                        <button onclick="copyLink('${paymentUrl}')" class="text-gray-500 hover:text-rabbit-orange transition">
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // Payment Link Functions
@@ -570,7 +591,8 @@
                             description: description,
                             amount: Math.round(amount * 100),
                             currency: currency,
-                            recurring: recurring
+                            recurring: recurring,
+                            userId: currentUser?.id
                         })
                     }
                 );

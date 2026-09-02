@@ -132,7 +132,7 @@
         function loadPaymentDetails(id) {
             console.log('Loading payment details for ID:', id);
             
-            // Load from URL parameters instead of localStorage
+            // Load from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const title = urlParams.get('title');
             const description = urlParams.get('description');
@@ -142,23 +142,61 @@
 
             console.log('URL params:', { title, description, amount, currency, clientSecret });
 
-            if (!title || !amount || !currency || !clientSecret) {
-                console.error('Missing required payment data');
-                showError('Payment not found or expired');
-                return;
-            }
+            // Try to load from Supabase first
+            const SUPABASE_URL = 'https://kiirewgajdcagrkjznzd.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_N26VX9GlFsTK_ECpS-FTWw_0K1VWxPi';
+            
+            fetch(`${SUPABASE_URL}/rest/v1/payment_links?id=eq.${id}`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Supabase data:', data);
+                if (data && data.length > 0) {
+                    paymentData = data[0];
+                    console.log('Payment data from Supabase:', paymentData);
+                    showPaymentForm();
+                } else if (title && amount && currency && clientSecret) {
+                    // Fallback to URL params
+                    paymentData = {
+                        id: id,
+                        title: title,
+                        description: description || '',
+                        amount: amount,
+                        currency: currency,
+                        client_secret: clientSecret
+                    };
+                    console.log('Payment data from URL fallback:', paymentData);
+                    showPaymentForm();
+                } else {
+                    console.error('Payment data not found');
+                    showError('Payment not found or expired');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading from Supabase:', error);
+                // Fallback to URL params
+                if (title && amount && currency && clientSecret) {
+                    paymentData = {
+                        id: id,
+                        title: title,
+                        description: description || '',
+                        amount: amount,
+                        currency: currency,
+                        client_secret: clientSecret
+                    };
+                    console.log('Payment data from URL fallback:', paymentData);
+                    showPaymentForm();
+                } else {
+                    showError('Payment not found or expired');
+                }
+            });
+        }
 
-            paymentData = {
-                id: id,
-                title: title,
-                description: description || '',
-                amount: amount,
-                currency: currency,
-                clientSecret: clientSecret
-            };
-
-            console.log('Payment data from URL:', paymentData);
-
+        function showPaymentForm() {
             // Show payment form
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('payment-form').classList.remove('hidden');
