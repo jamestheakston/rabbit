@@ -17,6 +17,7 @@
             border-radius: 6px;
             background: #fff;
             min-height: 44px;
+            padding: 12px;
         }
         .stripe-card:focus-within {
             border-color: #0284c7;
@@ -24,7 +25,6 @@
         }
         .StripeElement {
             width: 100%;
-            padding: 12px;
         }
     </style>
 </head>
@@ -73,7 +73,7 @@
                 <!-- Card Input -->
                 <div class="space-y-3">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Card details</label>
-                    <div id="card-element" class="stripe-card"></div>
+                    <div id="card-element" class="border border-slate-300 rounded-md p-3"></div>
                     <div id="card-errors" class="text-red-500 text-sm"></div>
                 </div>
 
@@ -206,8 +206,7 @@
                             fontFamily: 'Inter, sans-serif',
                             '::placeholder': {
                                 color: '#94a3b8'
-                            },
-                            padding: '10px'
+                            }
                         }
                     }
                 });
@@ -220,7 +219,7 @@
                 }
 
                 cardElement.mount('#card-element');
-                console.log('Card element mounted');
+                console.log('Card element mounted successfully');
                 
                 cardElement.on('change', function(event) {
                     const displayError = document.getElementById('card-errors');
